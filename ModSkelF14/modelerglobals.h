@@ -23,7 +23,10 @@ enum SampleModelControls
 #define BODY_LENGTH 2
 #define HEAD_LENGTH	1.25
 #define HEAD_RADIUS 0.625
-
+#define SHOULDER_LENGTH 1
+#define WAIST_RADIUS 0.75
+#define LEG_RADIUS 0.25
+#define LEG_LENGTH 1
 // We'll be getting the instance of the application a lot; 
 // might as well have it as a macro.
 #define VAL(x) (ModelerApplication::Instance()->GetControlValue(x))
