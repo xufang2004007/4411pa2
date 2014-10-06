@@ -43,3 +43,8 @@ Temporary Items
 .apdisk
 *.exe
 ModSkelF14/Release/
+ModSkelF14/Debug/
+
+ModSkelF14/modeler.opensdf
+ModSkelF14/modeler.sdf
+ModSkelF14/UpgradeLog.htm
