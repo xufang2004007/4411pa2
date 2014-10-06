@@ -35,9 +35,61 @@ void SampleModel::draw()
 
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_GIRL_BODY);
+
+	// boy base
+
+	setDiffuseColor(COLOR_BOY_BODY);
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
+	
+		// body
+		glPushMatrix();
+		glTranslated(-BOY_BODY_X / 2, -BOY_BODY_Y / 2, 0);
+		drawBox(BOY_BODY_X, BOY_BODY_Y, BOY_BODY_Z);
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslated(0, 0, BOY_BODY_Z);
+
+			// head
+			glPushMatrix();
+			glTranslated(-BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, 0);
+			glRotated(BOY_HEAD_PITCH_ANGLE, 1, 0, 0);
+			glRotated(BOY_HEAD_TILT_ANGLE, 0, 1, 0);
+			drawBox(BOY_HEAD_X, BOY_HEAD_Y, BOY_HEAD_Z);
+			glPopMatrix();
+
+
+			// arms / hands
+			for (int i = -1; i <= 1; i += 2) {
+				glPushMatrix();
+				glTranslated(i * BOY_BODY_X / 2, 0, 0);
+				glRotated(BOY_SHOULDER_ANGLE, 1, 0, 0);
+
+					glPushMatrix();
+					glTranslated(- BOY_UPPER_ARM_RADIUS / 2, - BOY_UPPER_ARM_RADIUS / 2, 0);
+					drawBox(BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_LENGTH);
+					glPopMatrix();
+
+					glPushMatrix();
+					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
+					glRotated(BOY_ELBOW_ANGLE, 1, 0, 0);
+					glTranslated(- BOY_LOWER_ARM_RADIUS / 2, - BOY_LOWER_ARM_RADIUS / 2, 0);
+					drawBox(BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_LENGTH);
+					glPopMatrix();
+
+				glPopMatrix();
+			}
+
+		glPopMatrix();
+
+	glPopMatrix();
+
+	// girl
+
+	setDiffuseColor(COLOR_GIRL_BODY);
+	glPushMatrix();
+	glTranslated(VAL(XPOS) + 5, VAL(YPOS), VAL(ZPOS));
 
 		// body
 		glPushMatrix();
