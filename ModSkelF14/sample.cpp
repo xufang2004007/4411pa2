@@ -35,23 +35,23 @@ void SampleModel::draw()
 
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_BOY_BODY);
+	setDiffuseColor(COLOR_GIRL_BODY);
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
 		// body
 		glPushMatrix();
 		glScaled(1, 0.5, 1);
-		drawCylinder(BOY_BODY_LENGTH, BOY_WAIST_RADIUS, BOY_SHOULDER_LENGTH);
+		drawCylinder(GIRL_BODY_LENGTH, GIRL_WAIST_RADIUS, GIRL_SHOULDER_LENGTH);
 		glPopMatrix();
 
 		glPushMatrix();
-		glTranslated(0, 0, BOY_BODY_LENGTH);
+		glTranslated(0, 0, GIRL_BODY_LENGTH);
 
 			// head
 			glPushMatrix();
-			glRotated(BOY_HEAD_PITCH_ANGLE, 1, 0, 0);
-			glRotated(BOY_HEAD_TILT_ANGLE, 0, 1, 0);
+			glRotated(GIRL_HEAD_PITCH_ANGLE, 1, 0, 0);
+			glRotated(GIRL_HEAD_TILT_ANGLE, 0, 1, 0);
 			glTranslated(0, 0, HEAD_RADIUS * HEAD_LENGTH);
 			glScaled(1, 1, HEAD_LENGTH);
 			drawSphere(HEAD_RADIUS);
@@ -69,27 +69,27 @@ void SampleModel::draw()
 				drawSphere(EYES_RADIUS);
 				glPopMatrix();
 
-			setDiffuseColor(COLOR_BOY_BODY);
+			setDiffuseColor(COLOR_GIRL_BODY);
 
 			glPopMatrix();
 		
 			// arms / hands
 			for (int i = -1; i <= 1; i += 2) {
 				glPushMatrix();
-				glTranslated(i * BOY_SHOULDER_LENGTH, 0, 0);
-				glRotated(BOY_SHOULDER_ANGLE, 1, 0, 0);
-				drawCylinder(BOY_UPPER_ARM_LENGTH, BOY_UPPER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
+				glTranslated(i * GIRL_SHOULDER_LENGTH, 0, 0);
+				glRotated(GIRL_SHOULDER_ANGLE, 1, 0, 0);
+				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 					
 					glPushMatrix();
-					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
-					glRotated(BOY_ELBOW_ANGLE, 1, 0, 0);
-					drawCylinder(BOY_LOWER_ARM_LENGTH, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
+					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
+					glRotated(GIRL_ELBOW_ANGLE, 1, 0, 0);
+					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 						glPushMatrix();
-						glTranslated(0, 0, BOY_LOWER_ARM_LENGTH);
+						glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
 						glRotated(90, 0, -i, 0);
 						glScaled(1.25, 1, 1);
-						drawCylinder(0.125, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
+						drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 						glPopMatrix();
 
 					glPopMatrix();
@@ -100,23 +100,23 @@ void SampleModel::draw()
 			// leg / feet
 			for (int i = -1; i <= 1; i += 2){
 				glPushMatrix();
-				glTranslated(i*BOY_WAIST_RADIUS / 2, 0, (-BOY_LEG_LENGTH - BOY_BODY_LENGTH)/2);
+				glTranslated(i*GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH)/2);
 				glRotated(90, -1, 0, 0);
-				glTranslated(0, 0, (-BOY_LEG_LENGTH - BOY_BODY_LENGTH) / 2);
+				glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 					//upper leg
 					glPushMatrix();
-					drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_WAIST_RADIUS / 2);
+					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 					glPopMatrix();
 
 					//lower leg
 					glPushMatrix();
-					glTranslated(0, 0, -BOY_LEG_LENGTH);
-					drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_LEG_RADIUS);
+					glTranslated(0, 0, -GIRL_LEG_LENGTH);
+					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 					glPopMatrix();
 
 					//foot
 					glPushMatrix();
-					glTranslated(0, -BOY_LEG_RADIUS, -BOY_LEG_LENGTH - BOY_LEG_RADIUS / 2);
+					glTranslated(0, -GIRL_LEG_RADIUS, -GIRL_LEG_LENGTH - GIRL_LEG_RADIUS / 2);
 					glScaled(1, 2, 0.5);
 					drawSphere(0.25);
 					glPopMatrix();
