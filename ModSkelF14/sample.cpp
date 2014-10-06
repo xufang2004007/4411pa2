@@ -15,6 +15,7 @@ public:
         : ModelerView(x,y,w,h,label) { }
 
     virtual void draw();
+	virtual void drawGirl();
 };
 
 // We need to make a creator function, mostly because of
@@ -59,7 +60,6 @@ void SampleModel::draw()
 			drawBox(BOY_HEAD_X, BOY_HEAD_Y, BOY_HEAD_Z);
 			glPopMatrix();
 
-
 			// arms / hands
 			for (int i = -1; i <= 1; i += 2) {
 				glPushMatrix();
@@ -85,11 +85,14 @@ void SampleModel::draw()
 
 	glPopMatrix();
 
-	// girl
-
-	setDiffuseColor(COLOR_GIRL_BODY);
 	glPushMatrix();
-	glTranslated(VAL(XPOS) + 5, VAL(YPOS), VAL(ZPOS));
+	glTranslated(3, 0, 0);
+	drawGirl();
+	glPopMatrix();
+}
+
+void SampleModel::drawGirl() {
+	setDiffuseColor(COLOR_GIRL_BODY);
 
 		// body
 		glPushMatrix();
@@ -125,7 +128,7 @@ void SampleModel::draw()
 
 			glPopMatrix();
 			
-			//breast
+			// breast
 			for (int i = -1; i <= 1; i += 2){
 				glPushMatrix();
 				glTranslated(i*GIRL_BREAST_RADIUS*0.75, GIRL_BREAST_RADIUS / 2, -GIRL_BODY_LENGTH*0.25);
@@ -162,12 +165,13 @@ void SampleModel::draw()
 			glTranslated(-GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH)/2);
 			glRotated(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
 			glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
-				//upper leg
+
+				// upper leg
 				glPushMatrix();
 				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 				glPopMatrix();
 
-				//lower leg
+				// lower leg
 				glPushMatrix();
 				glRotated(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
 				glTranslated(0, 0, -GIRL_LEG_LENGTH);
@@ -193,12 +197,13 @@ void SampleModel::draw()
 			glTranslated(GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 			glRotated(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
 			glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
-				//upper leg
+
+				// upper leg
 				glPushMatrix();
 				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 				glPopMatrix();
 
-				//lower leg
+				// lower leg
 				glPushMatrix();
 				glRotated(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
 				glTranslated(0, 0, -GIRL_LEG_LENGTH);
@@ -207,7 +212,7 @@ void SampleModel::draw()
 					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 					glPopMatrix();
 
-					//foot
+					// foot
 					glPushMatrix();
 					glRotated(GIRL_RIGHT_FOOT_PITCH_ANGLE, 1, 0, 0);
 					glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
@@ -218,12 +223,8 @@ void SampleModel::draw()
 				glPopMatrix();
 
 			glPopMatrix();
-			
-	
 
 		glPopMatrix();
-
-	glPopMatrix();
 }
 
 int main()

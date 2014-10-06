@@ -64,13 +64,13 @@ enum SampleModelControls
 	#define GIRL_HEAD_PITCH_ANGLE	15 // to be variable
 	#define GIRL_HEAD_TILT_ANGLE	10 // to be variable
 	// Leg
-	#define GIRL_LEG_RADIUS 0.25
+	#define GIRL_LEG_RADIUS 0.2
 	#define GIRL_LEG_LENGTH 1.25
 	#define GIRL_LEFT_UPPER_LEG_PITCH_ANGLE 45
 	#define GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE -15
 	#define GIRL_LEFT_LOWER_LEG_PITCH_ANGLE -45
 	#define GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE -45
-	//Foot
+	// Foot
 	#define GIRL_LEFT_FOOT_PITCH_ANGLE -0
 	#define GIRL_RIGHT_FOOT_PITCH_ANGLE -30
 
