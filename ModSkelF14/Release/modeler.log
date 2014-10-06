@@ -1,25 +1,8 @@
-﻿Build started 8/20/2014 9:35:13 PM.
-     1>Project "C:\Users\cktang\Desktop\ModSkelS12\modeler.vcxproj" on node 2 (Rebuild target(s)).
+﻿Build started 10/6/2014 10:26:25 PM.
+     1>Project "C:\Users\xkong\Source\Repos\4411pa2\ModSkelF14\modeler.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Ilocal\include /Zi /nologo /W3 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release/" /Fd".\Release/vc120.pdb" /Gd /TP /analyze- /errorReport:prompt bitmap.cpp camera.cpp modelerapp.cpp modelerdraw.cpp modelerui.cxx modelerview.cpp sample.cpp
-         bitmap.cpp
-     1>bitmap.cpp(22): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
-     1>bitmap.cpp(128): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
-         camera.cpp
-         modelerapp.cpp
-     1>modelerapp.cpp(37): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\string.h(195) : see declaration of 'strncpy'
-         modelerdraw.cpp
-     1>modelerdraw.cpp(151): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
-         modelerui.cxx
-     1>modelerui.cxx(103): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(211) : see declaration of 'fopen'
-         modelerview.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Ilocal\include /Zi /nologo /W3 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release/" /Fd".\Release/vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sample.cpp
          sample.cpp
-         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Release/modeler.exe" /INCREMENTAL:NO /NOLOGO local/lib/fltk.lib wsock32.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\Release/modeler.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:".\Release\modeler.lib" /MACHINE:X86 /SAFESEH:NO .\Release/bitmap.obj
          .\Release/camera.obj
@@ -28,9 +11,9 @@
          .\Release/modelerui.obj
          .\Release/modelerview.obj
          .\Release/sample.obj
-         modeler.vcxproj -> C:\Users\cktang\Desktop\ModSkelS12\.\Release\modeler.exe
-     1>Done Building Project "C:\Users\cktang\Desktop\ModSkelS12\modeler.vcxproj" (Rebuild target(s)).
+         modeler.vcxproj -> C:\Users\xkong\Source\Repos\4411pa2\ModSkelF14\.\Release\modeler.exe
+     1>Done Building Project "C:\Users\xkong\Source\Repos\4411pa2\ModSkelF14\modeler.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.61
+Time Elapsed 00:00:00.58
