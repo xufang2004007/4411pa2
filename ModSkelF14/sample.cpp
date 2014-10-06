@@ -42,16 +42,16 @@ void SampleModel::draw()
 		// body
 		glPushMatrix();
 		glScaled(1, 0.5, 1);
-		drawCylinder(BODY_LENGTH, WAIST_RADIUS, SHOULDER_LENGTH);
+		drawCylinder(BOY_BODY_LENGTH, BOY_WAIST_RADIUS, BOY_SHOULDER_LENGTH);
 		glPopMatrix();
 
 		glPushMatrix();
-		glTranslated(0, 0, BODY_LENGTH);
+		glTranslated(0, 0, BOY_BODY_LENGTH);
 
 			// head
 			glPushMatrix();
-			glRotated(HEAD_PITCH_ANGLE, 1, 0, 0);
-			glRotated(HEAD_TILT_ANGLE, 0, 1, 0);
+			glRotated(BOY_HEAD_PITCH_ANGLE, 1, 0, 0);
+			glRotated(BOY_HEAD_TILT_ANGLE, 0, 1, 0);
 			glTranslated(0, 0, HEAD_RADIUS * HEAD_LENGTH);
 			glScaled(1, 1, HEAD_LENGTH);
 			drawSphere(HEAD_RADIUS);
@@ -69,12 +69,12 @@ void SampleModel::draw()
 				glPushMatrix();
 				glTranslated(i, 0, 0);
 				glRotated(135, 1, 0, 0);
-				drawCylinder(UPPER_ARM_LENGTH, 0.25, 0.25);
+				drawCylinder(BOY_UPPER_ARM_LENGTH, 0.25, 0.25);
 					
 					glPushMatrix();
-					glTranslated(0, 0, UPPER_ARM_LENGTH);
-					glRotated(ELBOW_ANGLE, 1, 0, 0);
-					drawCylinder(LOWER_ARM_LENGTH, 0.2, 0.2);
+					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
+					glRotated(BOY_ELBOW_ANGLE, 1, 0, 0);
+					drawCylinder(BOY_LOWER_ARM_LENGTH, 0.2, 0.2);
 					glPopMatrix();
 
 				glPopMatrix();
@@ -82,30 +82,30 @@ void SampleModel::draw()
 
 			// leg
 			glPushMatrix();
-			glTranslated(0, 0, -LEG_LENGTH-BODY_LENGTH);
+			glTranslated(0, 0, -BOY_LEG_LENGTH-BOY_BODY_LENGTH);
 			    
 				// right upper leg
 				glPushMatrix();
-				glTranslated(-WAIST_RADIUS/2, 0, 0);
-				drawCylinder(LEG_LENGTH, LEG_RADIUS, WAIST_RADIUS / 2);
+				glTranslated(-BOY_WAIST_RADIUS/2, 0, 0);
+				drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_WAIST_RADIUS / 2);
 				glPopMatrix();
 
 				// right upper leg
 				glPushMatrix();
-				glTranslated(WAIST_RADIUS/2, 0, 0);
-				drawCylinder(LEG_LENGTH, LEG_RADIUS, WAIST_RADIUS / 2);
+				glTranslated(BOY_WAIST_RADIUS/2, 0, 0);
+				drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_WAIST_RADIUS / 2);
 				glPopMatrix();
 
 				// right lower leg
 				glPushMatrix();
-				glTranslated(-WAIST_RADIUS/2, 0, -LEG_LENGTH);
-				drawCylinder(LEG_LENGTH, LEG_RADIUS, LEG_RADIUS);
+				glTranslated(-BOY_WAIST_RADIUS/2, 0, -BOY_LEG_LENGTH);
+				drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_LEG_RADIUS);
 				glPopMatrix();
 
 				// right lower leg
 				glPushMatrix();
-				glTranslated(WAIST_RADIUS/2, 0, -LEG_LENGTH);
-				drawCylinder(LEG_LENGTH, LEG_RADIUS, LEG_RADIUS);
+				glTranslated(BOY_WAIST_RADIUS/2, 0, -BOY_LEG_LENGTH);
+				drawCylinder(BOY_LEG_LENGTH, BOY_LEG_RADIUS, BOY_LEG_RADIUS);
 				glPopMatrix();
 
 			glPopMatrix();
