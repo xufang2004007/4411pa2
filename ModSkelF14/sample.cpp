@@ -35,7 +35,7 @@ void SampleModel::draw()
 
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_BODY);
+	setDiffuseColor(COLOR_BOY_BODY);
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
@@ -56,25 +56,42 @@ void SampleModel::draw()
 			glScaled(1, 1, HEAD_LENGTH);
 			drawSphere(HEAD_RADIUS);
 
-				// eyes
+			// eyes
+			setDiffuseColor(COLOR_EYES);
+
 				glPushMatrix();
 				glTranslated(EYES_COORD);
 				drawSphere(EYES_RADIUS);
 				glPopMatrix();
+
+				glPushMatrix();
+				glTranslated(-EYES_COORD);
+				drawSphere(EYES_RADIUS);
+				glPopMatrix();
+
+			setDiffuseColor(COLOR_BOY_BODY);
 
 			glPopMatrix();
 		
 			// arms / hands
 			for (int i = -1; i <= 1; i += 2) {
 				glPushMatrix();
-				glTranslated(i, 0, 0);
-				glRotated(135, 1, 0, 0);
-				drawCylinder(BOY_UPPER_ARM_LENGTH, 0.25, 0.25);
+				glTranslated(i * BOY_SHOULDER_LENGTH, 0, 0);
+				glRotated(BOY_SHOULDER_ANGLE, 1, 0, 0);
+				drawCylinder(BOY_UPPER_ARM_LENGTH, BOY_UPPER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
 					
 					glPushMatrix();
 					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
 					glRotated(BOY_ELBOW_ANGLE, 1, 0, 0);
-					drawCylinder(BOY_LOWER_ARM_LENGTH, 0.2, 0.2);
+					drawCylinder(BOY_LOWER_ARM_LENGTH, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
+
+						glPushMatrix();
+						glTranslated(0, 0, BOY_LOWER_ARM_LENGTH);
+						glRotated(90, 0, -i, 0);
+						glScaled(1.25, 1, 1);
+						drawCylinder(0.125, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS);
+						glPopMatrix();
+
 					glPopMatrix();
 
 				glPopMatrix();
