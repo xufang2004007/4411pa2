@@ -42,7 +42,7 @@ void SampleModel::draw()
 		// body
 		glPushMatrix();
 		glScaled(1, 0.5, 1);
-		drawCylinder(BODY_LENGTH, 0.75, 1);
+		drawCylinder(BODY_LENGTH, WAIST_RADIUS, SHOULDER_LENGTH);
 		glPopMatrix();
 
 		glPushMatrix();
@@ -80,7 +80,35 @@ void SampleModel::draw()
 				glPopMatrix();
 			}
 
-			// legs / feet
+			// leg
+			glPushMatrix();
+			glTranslated(0, 0, -LEG_LENGTH-BODY_LENGTH);
+			    
+				// right upper leg
+				glPushMatrix();
+				glTranslated(-WAIST_RADIUS/2, 0, 0);
+				drawCylinder(LEG_LENGTH, LEG_RADIUS, WAIST_RADIUS / 2);
+				glPopMatrix();
+
+				// right upper leg
+				glPushMatrix();
+				glTranslated(WAIST_RADIUS/2, 0, 0);
+				drawCylinder(LEG_LENGTH, LEG_RADIUS, WAIST_RADIUS / 2);
+				glPopMatrix();
+
+				// right lower leg
+				glPushMatrix();
+				glTranslated(-WAIST_RADIUS/2, 0, -LEG_LENGTH);
+				drawCylinder(LEG_LENGTH, LEG_RADIUS, LEG_RADIUS);
+				glPopMatrix();
+
+				// right lower leg
+				glPushMatrix();
+				glTranslated(WAIST_RADIUS/2, 0, -LEG_LENGTH);
+				drawCylinder(LEG_LENGTH, LEG_RADIUS, LEG_RADIUS);
+				glPopMatrix();
+
+			glPopMatrix();
 
 		glPopMatrix();
 
