@@ -42,7 +42,7 @@ enum SampleModelControls
 	#define BOY_HEAD_TILT_ANGLE	10 // to be variable
 	// Leg
 	#define BOY_LEG_RADIUS 0.25
-	#define BOY_LEG_LENGTH 1
+	#define BOY_LEG_LENGTH 1.25
 
 // We'll be getting the instance of the application a lot; 
 // might as well have it as a macro.
