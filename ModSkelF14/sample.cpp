@@ -35,7 +35,7 @@ void SampleModel::draw()
 
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
-	setDiffuseColor(COLOR_GREEN);
+	setDiffuseColor(COLOR_BODY);
 	glPushMatrix();
 	glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
@@ -45,23 +45,40 @@ void SampleModel::draw()
 		drawCylinder(BODY_LENGTH, 0.75, 1);
 		glPopMatrix();
 
-		
 		glPushMatrix();
 		glTranslated(0, 0, BODY_LENGTH);
 
 			// head
 			glPushMatrix();
+			glRotated(HEAD_PITCH_ANGLE, 1, 0, 0);
+			glRotated(HEAD_TILT_ANGLE, 0, 1, 0);
 			glTranslated(0, 0, HEAD_RADIUS * HEAD_LENGTH);
 			glScaled(1, 1, HEAD_LENGTH);
 			drawSphere(HEAD_RADIUS);
+
+				// eyes
+				glPushMatrix();
+				glTranslated(EYES_COORD);
+				drawSphere(EYES_RADIUS);
+				glPopMatrix();
+
 			glPopMatrix();
 		
 			// arms / hands
-			glPushMatrix();
-			glTranslated(1, 0, 0);
-			glRotated(135, 0, 1, 0);
-			drawCylinder(1.25, 0.25, 0.25);
-			glPopMatrix();
+			for (int i = -1; i <= 1; i += 2) {
+				glPushMatrix();
+				glTranslated(i, 0, 0);
+				glRotated(135, 1, 0, 0);
+				drawCylinder(UPPER_ARM_LENGTH, 0.25, 0.25);
+					
+					glPushMatrix();
+					glTranslated(0, 0, UPPER_ARM_LENGTH);
+					glRotated(ELBOW_ANGLE, 1, 0, 0);
+					drawCylinder(LOWER_ARM_LENGTH, 0.2, 0.2);
+					glPopMatrix();
+
+				glPopMatrix();
+			}
 
 			// legs / feet
 
