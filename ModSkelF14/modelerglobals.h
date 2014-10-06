@@ -23,7 +23,7 @@ enum SampleModelControls
 
 // Common
 	// Misc.
-         // BOY_GIRL_ANGLE						variable
+	// BOY_GIRL_ANGLE						variable
 
 // Boy
 	// Body
@@ -33,7 +33,7 @@ enum SampleModelControls
 	// Arm
 	#define BOY_UPPER_ARM_LENGTH				1.375
 	#define BOY_UPPER_ARM_RADIUS				2 * 0.2
-	     // BOY_ELBOW_ANGLE						variable
+		 // BOY_ELBOW_ANGLE						variable
 	#define BOY_LOWER_ARM_LENGTH				1.25
 	#define BOY_LOWER_ARM_RADIUS				2 * 0.15
 		 // BOY_SHOULDER_ANGLE					variable
@@ -41,8 +41,22 @@ enum SampleModelControls
 	#define BOY_HEAD_X							1.125
 	#define BOY_HEAD_Y							0.875
 	#define BOY_HEAD_Z							1.25
-		 // BOY_HEAD_PITCH						variable
-	     // BOY_HEAD_TILT						variable
+		// BOY_HEAD_PITCH						variable
+		// BOY_HEAD_TILT						variable
+	// Leg
+	#define BOY_LEG_LENGTH						1.25
+	#define BOY_LEFT_UPPER_LEG_PITCH_ANGLE		45
+	#define BOY_LEFT_UPPER_LEG_RAW_ANGLE		0
+	#define BOY_LEFT_UPPER_LEG_YAW_ANGLE		0
+	#define BOY_RIGHT_UPPER_LEG_PITCH_ANGLE		-15
+	#define BOY_RIGHT_UPPER_LEG_RAW_ANGLE		0
+	#define BOY_RIGHT_UPPER_LEG_YAW_ANGLE		0
+	#define BOY_LEFT_LOWER_LEG_PITCH_ANGLE		-45
+	#define BOY_RIGHT_LOWER_LEG_PITCH_ANGLE		-45
+	// Foot
+	#define BOY_LEFT_FOOT_PITCH_ANGLE			-0
+	#define BOY_RIGHT_FOOT_PITCH_ANGLE			-30
+
 // Girl
 	// Body
 	#define GIRL_BODY_LENGTH					2
@@ -73,16 +87,23 @@ enum SampleModelControls
 	#define GIRL_LEG_RADIUS						0.2
 	#define GIRL_LEG_LENGTH						1.25
 	#define GIRL_LEFT_UPPER_LEG_PITCH_ANGLE		45
+	#define GIRL_LEFT_UPPER_LEG_RAW_ANGLE		0
+	#define GIRL_LEFT_UPPER_LEG_YAW_ANGLE		0
 	#define GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE	-15
+	#define GIRL_RIGHT_UPPER_LEG_RAW_ANGLE		0
+	#define GIRL_RIGHT_UPPER_LEG_YAW_ANGLE		0
 	#define GIRL_LEFT_LOWER_LEG_PITCH_ANGLE		-45
 	#define GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE	-45
 	// Foot
 	#define GIRL_LEFT_FOOT_PITCH_ANGLE			-0
 	#define GIRL_RIGHT_FOOT_PITCH_ANGLE			-30
 
-
 // We'll be getting the instance of the application a lot; 
 // might as well have it as a macro.
 #define VAL(x) (ModelerApplication::Instance()->GetControlValue(x))
+
+// do NOT use glPushMatrix() directly, as you might forget to pop them. Also, it will cause the indentation to corrupt with some IDEs.
+// use this instead
+#define GLMATRIX(stmt) { glPushMatrix(); stmt; glPopMatrix(); }
 
 #endif
