@@ -52,6 +52,7 @@ enum SampleModelControls
 	#define GIRL_BODY_LENGTH	2
 	#define GIRL_WAIST_RADIUS 0.75
 	#define GIRL_SHOULDER_LENGTH 1 // actually half
+	#define GIRL_BREAST_RADIUS 0.5
 	// Arm
 	#define GIRL_UPPER_ARM_LENGTH	1.35
 	#define GIRL_ELBOW_ANGLE	30 // to be variable
@@ -65,6 +66,14 @@ enum SampleModelControls
 	// Leg
 	#define GIRL_LEG_RADIUS 0.25
 	#define GIRL_LEG_LENGTH 1.25
+	#define GIRL_LEFT_UPPER_LEG_PITCH_ANGLE 45
+	#define GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE -15
+	#define GIRL_LEFT_LOWER_LEG_PITCH_ANGLE -45
+	#define GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE -45
+	//Foot
+	#define GIRL_LEFT_FOOT_PITCH_ANGLE -0
+	#define GIRL_RIGHT_FOOT_PITCH_ANGLE -30
+
 
 // We'll be getting the instance of the application a lot; 
 // might as well have it as a macro.
