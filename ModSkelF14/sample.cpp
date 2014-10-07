@@ -26,6 +26,13 @@ ModelerView* createSampleModel(int x, int y, int w, int h, char *label)
 	return new SampleModel(x, y, w, h, label);
 }
 
+void drawBoxFromBottomCenter(double x, double y, double z) {
+	GLMATRIX({
+		glTranslated(-x / 2, -y / 2, 0);
+		drawBox(x, y, z);
+	});
+}
+
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
@@ -46,10 +53,7 @@ void SampleModel::draw()
 			glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
 			// body
-			GLMATRIX({
-				glTranslated(-BOY_BODY_X / 2, -BOY_BODY_Y / 2, 0);
-				drawBox(BOY_BODY_X, BOY_BODY_Y, BOY_BODY_Z);
-			});
+			drawBoxFromBottomCenter(BOY_BODY_X, BOY_BODY_Y, BOY_BODY_Z);
 
 			GLMATRIX({
 				glTranslated(0, 0, BOY_BODY_Z);
@@ -57,11 +61,9 @@ void SampleModel::draw()
 				// head
 				GLMATRIX({
 					glRotated(VAL(BOY_HEAD_PITCH), 1, 0, 0);
-					glRotated(VAL(BOY_HEAD_TILT), 0, 1, 0);
-					drawBox(BOY_HEAD_X / 2, BOY_HEAD_Y / 2, BOY_HEAD_Z);
-					drawBox(-BOY_HEAD_X / 2, BOY_HEAD_Y / 2, BOY_HEAD_Z);
-					drawBox(BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, BOY_HEAD_Z);
-					drawBox(-BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, BOY_HEAD_Z);
+					glRotated(-VAL(BOY_HEAD_TILT), 0, 1, 0);
+					glTranslated(-BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, 0);
+					drawBox(BOY_HEAD_X, BOY_HEAD_Y, BOY_HEAD_Z);
 				});
 
 				// arms / hands
@@ -70,20 +72,14 @@ void SampleModel::draw()
 						glTranslated(i * BOY_BODY_X / 2, 0, 0);
 						glRotated(BSA, 1, 0, 0);
 
-						GLMATRIX({
-							glTranslated(-BOY_UPPER_ARM_RADIUS / 2, -BOY_UPPER_ARM_RADIUS / 2, 0);
-							drawBox(BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_LENGTH);
-						});
+						drawBoxFromBottomCenter(BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_RADIUS, BOY_UPPER_ARM_LENGTH);
 
 						GLMATRIX({
 							glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
 							glRotated(BEA, 1, 0, 0);
 							glRotated(10, 0, -i, 0);
 
-							GLMATRIX({
-								glTranslated(-BOY_LOWER_ARM_RADIUS / 2, -BOY_LOWER_ARM_RADIUS / 2, 0);
-								drawBox(BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_LENGTH);
-							});
+							drawBoxFromBottomCenter(BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_LENGTH);
 
 							GLMATRIX({
 								glTranslated(0, -0.125, BOY_LOWER_ARM_LENGTH);
@@ -95,70 +91,6 @@ void SampleModel::draw()
 					});
 				}
 
-				// left leg / feet
-				GLMATRIX({
-					glTranslated(-BOY_BODY_X / 2, 0, (-BOY_LEG_LENGTH - BOY_BODY_Z) / 2);
-					glRotated(BOY_LEFT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-					glRotated(BOY_LEFT_UPPER_LEG_RAW_ANGLE, 0, 1, 0);
-					glRotated(BOY_LEFT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
-					glTranslated(0, 0, (-BOY_LEG_LENGTH - BOY_BODY_Z) / 2);
-
-					// upper leg
-					GLMATRIX({
-						drawBox(BOY_BODY_X / 2, BOY_BODY_Y, BOY_LEG_LENGTH);
-					});
-
-					// lower leg
-					GLMATRIX({
-						glRotated(BOY_LEFT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
-						glTranslated(0, 0, -BOY_LEG_LENGTH);
-
-						drawBox(BOY_BODY_X / 2, BOY_BODY_Y, BOY_LEG_LENGTH);
-
-						// foot
-						GLMATRIX({
-							glRotated(BOY_LEFT_FOOT_PITCH_ANGLE, 1, 0, 0);
-							glTranslated(0, BOY_BODY_X / 2, -BOY_BODY_X / 4);
-							glScaled(1, 2, 0.5);
-							drawBox(BOY_BODY_X / 2, BOY_BODY_X / 2, BOY_BODY_X / 2);
-						});
-
-					});
-
-				});
-
-				// right leg / feet
-				GLMATRIX({
-					glTranslated(0, 0, (-BOY_LEG_LENGTH - BOY_BODY_Z) / 2);
-					glRotated(BOY_RIGHT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-					glRotated(BOY_RIGHT_UPPER_LEG_RAW_ANGLE, 0, 1, 0);
-					glRotated(BOY_RIGHT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
-					glTranslated(0, 0, (-BOY_LEG_LENGTH - BOY_BODY_Z) / 2);
-
-					// upper leg
-					GLMATRIX({
-						drawBox(BOY_BODY_X / 2, BOY_BODY_Y, BOY_LEG_LENGTH);
-					});
-
-					// lower leg
-					GLMATRIX({
-						glRotated(BOY_RIGHT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
-						glTranslated(0, 0, -BOY_LEG_LENGTH);
-
-						drawBox(BOY_BODY_X / 2, BOY_BODY_Y, BOY_LEG_LENGTH);
-
-						// foot
-						GLMATRIX({
-							glRotated(BOY_RIGHT_FOOT_PITCH_ANGLE, 1, 0, 0);
-							glTranslated(0, BOY_BODY_X / 2, -BOY_BODY_X / 4);
-							glScaled(1, 2, 0.5);
-							drawBox(BOY_BODY_X / 2, BOY_BODY_X / 2, BOY_BODY_X / 2);
-						});
-
-					});
-
-				});
-
 				GLMATRIX({
 					glRotated(BSA, 1, 0, 0);
 					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
@@ -167,6 +99,60 @@ void SampleModel::draw()
 					glRotated(VAL(BOY_GIRL_ANGLE) - BSA - BEA, 1, 0, 0);
 					drawGirl();
 				});
+			});
+
+			// left leg / feet
+			GLMATRIX({
+				glTranslated(BOY_BODY_X / 4, 0, 0);
+				glRotated(VAL(BOY_LEFT_UPPER_LEG_PITCH_ANGLE), -1, 0, 0);
+				glRotated(VAL(BOY_LEFT_UPPER_LEG_ROLL_ANGLE), 0, -1, 0);
+				glRotated(VAL(BOY_LEFT_UPPER_LEG_YAW_ANGLE), 0, 0, 1);
+
+				// upper leg
+				drawBoxFromBottomCenter(BOY_UPPER_LEG_X, BOY_UPPER_LEG_Y, -BOY_UPPER_LEG_LENGTH);
+
+				// lower leg
+				GLMATRIX({
+					glTranslated(0, 0, -BOY_UPPER_LEG_LENGTH);
+					glRotated(180 + VAL(BOY_LEFT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
+					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
+
+					// foot
+					GLMATRIX({
+						glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
+						glRotated(180 - VAL(BOY_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
+						drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
+					});
+
+				});
+
+			});
+
+			// right leg / feet
+			GLMATRIX({
+				glTranslated(- BOY_BODY_X / 4, 0, 0);
+				glRotated(VAL(BOY_RIGHT_UPPER_LEG_PITCH_ANGLE), -1, 0, 0);
+				glRotated(VAL(BOY_RIGHT_UPPER_LEG_ROLL_ANGLE), 0, 1, 0);
+				glRotated(VAL(BOY_RIGHT_UPPER_LEG_YAW_ANGLE), 0, 0, -1);
+
+				// upper leg
+				drawBoxFromBottomCenter(BOY_UPPER_LEG_X, BOY_UPPER_LEG_Y, -BOY_UPPER_LEG_LENGTH);
+
+				// lower leg
+				GLMATRIX({
+					glTranslated(0, 0, -BOY_UPPER_LEG_LENGTH);
+					glRotated(180 + VAL(BOY_RIGHT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
+					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
+
+					// foot
+					GLMATRIX({
+						glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
+						glRotated(180 - VAL(BOY_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
+						drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
+					});
+
+				});
+
 			});
 
 		});
@@ -186,8 +172,8 @@ void SampleModel::drawGirl() {
 
 			// head
 			GLMATRIX({
-				glRotated(GIRL_HEAD_PITCH_ANGLE, 1, 0, 0);
-				glRotated(GIRL_HEAD_TILT_ANGLE, 0, 1, 0);
+				glRotated(- VAL(GIRL_HEAD_PITCH), 1, 0, 0);
+				glRotated(VAL(GIRL_HEAD_TILT), 0, 1, 0);
 				glTranslated(0, 0, GIRL_HEAD_RADIUS * GIRL_HEAD_LENGTH);
 				glScaled(1, 1, GIRL_HEAD_LENGTH);
 				drawSphere(GIRL_HEAD_RADIUS);
@@ -218,14 +204,14 @@ void SampleModel::drawGirl() {
 			// left arm
 			GLMATRIX({
 				glTranslated(-1 * GIRL_SHOULDER_LENGTH, 0, 0);
-				glRotated(GIRL_SHOULDER_LEFT_ANGLE_FLAP, 0, 1, 0);
-				glRotated(GIRL_SHOULDER_LEFT_ANGLE_RAISE, 1, 0, 0);
-				glRotated(GIRL_SHOULDER_LEFT_ANGLE_AXIAL, 0, 0, 1);
+				glRotated(90 + VAL(GIRL_SHOULDER_LEFT_ANGLE_FLAP), 0, -1, 0);
+				glRotated(VAL(GIRL_SHOULDER_LEFT_ANGLE_RAISE), -1, 0, 0);
+				glRotated(180 + VAL(GIRL_SHOULDER_LEFT_ANGLE_AXIAL), 0, 0, 1);
 				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 				GLMATRIX({
 					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
-					glRotated(GIRL_ELBOW_LEFT_ANGLE, 1, 0, 0);
+					glRotated(VAL(GIRL_ELBOW_LEFT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 					GLMATRIX({
@@ -242,14 +228,14 @@ void SampleModel::drawGirl() {
 			// right arm
 			GLMATRIX({
 				glTranslated(1 * GIRL_SHOULDER_LENGTH, 0, 0);
-				glRotated(GIRL_SHOULDER_RIGHT_ANGLE_FLAP, 0, 1, 0);
-				glRotated(GIRL_SHOULDER_RIGHT_ANGLE_RAISE, 1, 0, 0);
-				glRotated(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL, 0, 0, 1);
+				glRotated(90 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_FLAP), 0, 1, 0);
+				glRotated(VAL(GIRL_SHOULDER_RIGHT_ANGLE_RAISE), -1, 0, 0);
+				glRotated(180 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL), 0, 0, -1);
 				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 				GLMATRIX({
 					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
-					glRotated(GIRL_ELBOW_RIGHT_ANGLE, 1, 0, 0);
+					glRotated(VAL(GIRL_ELBOW_RIGHT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 					GLMATRIX({
@@ -267,23 +253,19 @@ void SampleModel::drawGirl() {
 			GLMATRIX({
 				glTranslated(-GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 				glRotated(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-				glRotated(GIRL_LEFT_UPPER_LEG_RAW_ANGLE, 0, 1, 0);
+				glRotated(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE, 0, 1, 0);
 				glRotated(GIRL_LEFT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
 				glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 
 				// upper leg
-				GLMATRIX({
-					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
-				});
+				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 
 				// lower leg
 				GLMATRIX({
 					glRotated(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
 					glTranslated(0, 0, -GIRL_LEG_LENGTH);
 
-					GLMATRIX({
-						drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-					});
+					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 					// foot
 					GLMATRIX({
@@ -301,23 +283,19 @@ void SampleModel::drawGirl() {
 			GLMATRIX({
 				glTranslated(GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 				glRotated(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-				glRotated(GIRL_RIGHT_UPPER_LEG_RAW_ANGLE, 0, 1, 0);
+				glRotated(GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE, 0, 1, 0);
 				glRotated(GIRL_RIGHT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
 				glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
 
 				// upper leg
-				GLMATRIX({
-					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
-				});
+				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 
 				// lower leg
 				GLMATRIX({
 					glRotated(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
 					glTranslated(0, 0, -GIRL_LEG_LENGTH);
 
-					GLMATRIX({
-						drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-					});
+					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 					// foot
 					GLMATRIX({
@@ -344,13 +322,34 @@ int main()
 	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
-	controls[BOY_GIRL_BIND] = ModelerControl("Bind characters", 0, 1, 1, 1);
 	controls[BOY_GIRL_SIDE] = ModelerControl("Characters on same orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
 	controls[BOY_HEAD_PITCH] = ModelerControl("Boy - head pitch", -45, 90, 0.1f, 0);
 	controls[BOY_HEAD_TILT] = ModelerControl("Boy - head tilt", -45, 45, 0.1f, 0);
 	controls[BOY_SHOULDER_ANGLE] = ModelerControl("Boy - shoulder", 0, 90, 0.1f, 45);
 	controls[BOY_ELBOW_ANGLE] = ModelerControl("Boy - elbow", 0, 150, 0.1f, 30);
+
+	controls[BOY_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left leg (pitch)", -45, 90, 0.1f, 0);
+	controls[BOY_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right leg (pitch)", -45, 90, 0.1f, 0);
+	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -75, 45, 0.1f, 0);
+	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -75, 45, 0.1f, 0);
+	controls[BOY_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - left leg (yaw)", -30, 60, 0.1f, 0);
+	controls[BOY_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - right leg (yaw)", -30, 60, 0.1f, 0);
+	controls[BOY_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left knee", 0, 120, 0.1f, 0);
+	controls[BOY_RIGHT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right knee", 0, 120, 0.1f, 0);
+	controls[BOY_LEFT_FOOT_PITCH_ANGLE] = ModelerControl("Boy - left ankle", 0, 105, 0.1f, 90);
+	controls[BOY_RIGHT_FOOT_PITCH_ANGLE] = ModelerControl("Boy - right ankle", 0, 105, 0.1f, 90);
+
+	controls[GIRL_HEAD_PITCH] = ModelerControl("Girl - head pitch", -45, 90, 0.1f, 0);
+	controls[GIRL_HEAD_TILT] = ModelerControl("Girl - head tilt", -45, 45, 0.1f, 0);
+	controls[GIRL_SHOULDER_LEFT_ANGLE_FLAP] = ModelerControl("Girl - left shoudler (flap)", -90, 90, 0.1f, 60);
+	controls[GIRL_SHOULDER_RIGHT_ANGLE_FLAP] = ModelerControl("Girl - right shoudler (flap)", -90, 90, 0.1f, 60);
+	controls[GIRL_SHOULDER_LEFT_ANGLE_RAISE] = ModelerControl("Girl - left shoudler (raise)", -180, 180, 0.1f, 0);
+	controls[GIRL_SHOULDER_RIGHT_ANGLE_RAISE] = ModelerControl("Girl - right shoudler (raise)", -180, 180, 0.1f, 0);
+	controls[GIRL_SHOULDER_LEFT_ANGLE_AXIAL] = ModelerControl("Girl - left shoudler (axial)", -90, 90, 0.1f, 0);
+	controls[GIRL_SHOULDER_RIGHT_ANGLE_AXIAL] = ModelerControl("Girl - right shoudler (axial)", -90, 90, 0.1f, 0);
+	controls[GIRL_ELBOW_LEFT_ANGLE] = ModelerControl("Girl - left elbow", 0, 150, 0.1f, 30);
+	controls[GIRL_ELBOW_RIGHT_ANGLE] = ModelerControl("Girl - right elbow", 0, 150, 0.1f, 30);
 
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
