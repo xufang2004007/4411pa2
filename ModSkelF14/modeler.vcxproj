@@ -191,9 +191,6 @@
     <ClInclude Include="modelerview.h" />
     <ClInclude Include="vec.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="README.html" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
