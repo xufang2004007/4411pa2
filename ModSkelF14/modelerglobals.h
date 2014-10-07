@@ -44,6 +44,7 @@ enum SampleModelControls {
 		#define BOY_LOWER_ARM_LENGTH				1.25
 		#define BOY_LOWER_ARM_RADIUS				2 * 0.15
 			 // BOY_SHOULDER_ANGLE					variable
+		#define HAND_SCALE_RATIO					0.1
 		// Head
 		#define BOY_HEAD_X							1.125
 		#define BOY_HEAD_Y							0.875

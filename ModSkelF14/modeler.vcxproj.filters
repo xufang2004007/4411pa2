@@ -68,6 +68,9 @@
     <ClInclude Include="glhelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="handdrawer.cpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.html" />
