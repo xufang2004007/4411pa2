@@ -249,62 +249,62 @@ void SampleModel::drawGirl() {
 
 			});
 
-			// left leg / feet
+		});
+
+		// left leg / feet
+		GLMATRIX({
+			glTranslated(-GIRL_WAIST_RADIUS / 2, 0, 0);
+			glRotated(VAL(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE), 1, 0, 0);
+			glRotated(VAL(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE), 0, 1, 0);
+			glRotated(VAL(GIRL_LEFT_UPPER_LEG_YAW_ANGLE), 0, 0, 1);
+
+			// upper leg
+			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
+			drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+
+			// lower leg
 			GLMATRIX({
-				glTranslated(-GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
-				glRotated(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-				glRotated(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE, 0, 1, 0);
-				glRotated(GIRL_LEFT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
-				glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
+				glRotated(180 - VAL(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				// upper leg
-				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
-				// lower leg
+				// foot
 				GLMATRIX({
-					glRotated(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
-					glTranslated(0, 0, -GIRL_LEG_LENGTH);
-
-					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-
-					// foot
-					GLMATRIX({
-						glRotated(GIRL_LEFT_FOOT_PITCH_ANGLE, 1, 0, 0);
-						glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
-						glScaled(1, 2, 0.5);
-						drawSphere(0.25);
-					});
-
+					glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
+					glRotated(90 + VAL(GIRL_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
+					glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
+					glScaled(1, 2, 0.5);
+					drawSphere(0.25);
 				});
 
 			});
 
-			// right leg / feet
+		});
+
+		// right leg / feet
+		GLMATRIX({
+			glTranslated(GIRL_WAIST_RADIUS / 2, 0, 0);
+			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE), 1, 0, 0);
+			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE), 0, -1, 0);
+			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_YAW_ANGLE), 0, 0, -1);
+
+			// upper leg
+			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
+			drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+
+			// lower leg
 			GLMATRIX({
-				glTranslated(GIRL_WAIST_RADIUS / 2, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
-				glRotated(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE, 1, 0, 0);
-				glRotated(GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE, 0, 1, 0);
-				glRotated(GIRL_RIGHT_UPPER_LEG_YAW_ANGLE, 0, 0, 1);
-				glTranslated(0, 0, (-GIRL_LEG_LENGTH - GIRL_BODY_LENGTH) / 2);
+				glRotated(180 - VAL(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				// upper leg
-				drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
-				// lower leg
+				// foot
 				GLMATRIX({
-					glRotated(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE, 1, 0, 0);
-					glTranslated(0, 0, -GIRL_LEG_LENGTH);
-
-					drawCylinder(GIRL_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-
-					// foot
-					GLMATRIX({
-						glRotated(GIRL_RIGHT_FOOT_PITCH_ANGLE, 1, 0, 0);
-						glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
-						glScaled(1, 2, 0.5);
-						drawSphere(0.25);
-					});
-
+					glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
+					glRotated(90 + VAL(GIRL_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
+					glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
+					glScaled(1, 2, 0.5);
+					drawSphere(0.25);
 				});
 
 			});
@@ -324,15 +324,15 @@ int main()
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
 	controls[BOY_GIRL_SIDE] = ModelerControl("Characters on same orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
+
 	controls[BOY_HEAD_PITCH] = ModelerControl("Boy - head pitch", -45, 90, 0.1f, 0);
 	controls[BOY_HEAD_TILT] = ModelerControl("Boy - head tilt", -45, 45, 0.1f, 0);
 	controls[BOY_SHOULDER_ANGLE] = ModelerControl("Boy - shoulder", 0, 90, 0.1f, 45);
 	controls[BOY_ELBOW_ANGLE] = ModelerControl("Boy - elbow", 0, 150, 0.1f, 30);
-
 	controls[BOY_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left leg (pitch)", -45, 90, 0.1f, 0);
 	controls[BOY_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right leg (pitch)", -45, 90, 0.1f, 0);
-	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -75, 45, 0.1f, 0);
-	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -75, 45, 0.1f, 0);
+	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -15, 45, 0.1f, 0);
+	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -15, 45, 0.1f, 0);
 	controls[BOY_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - left leg (yaw)", -30, 60, 0.1f, 0);
 	controls[BOY_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - right leg (yaw)", -30, 60, 0.1f, 0);
 	controls[BOY_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left knee", 0, 120, 0.1f, 0);
@@ -350,6 +350,16 @@ int main()
 	controls[GIRL_SHOULDER_RIGHT_ANGLE_AXIAL] = ModelerControl("Girl - right shoudler (axial)", -90, 90, 0.1f, 0);
 	controls[GIRL_ELBOW_LEFT_ANGLE] = ModelerControl("Girl - left elbow", 0, 150, 0.1f, 30);
 	controls[GIRL_ELBOW_RIGHT_ANGLE] = ModelerControl("Girl - right elbow", 0, 150, 0.1f, 30);
+	controls[GIRL_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left leg (pitch)", -45, 90, 0.1f, 0);
+	controls[GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right leg (pitch)", -45, 90, 0.1f, 0);
+	controls[GIRL_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - left leg (roll)", -15, 45, 0.1f, 0);
+	controls[GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - right leg (roll)", -15, 45, 0.1f, 0);
+	controls[GIRL_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - left leg (yaw)", -30, 60, 0.1f, 0);
+	controls[GIRL_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - right leg (yaw)", -30, 60, 0.1f, 0);
+	controls[GIRL_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left knee", 0, 120, 0.1f, 0);
+	controls[GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right knee", 0, 120, 0.1f, 0);
+	controls[GIRL_LEFT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - left ankle", 0, 105, 0.1f, 90);
+	controls[GIRL_RIGHT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - right ankle", 0, 105, 0.1f, 90);
 
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
