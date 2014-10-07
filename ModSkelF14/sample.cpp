@@ -40,6 +40,11 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 	});
 }
 
+double animationEase(double progress) {
+	double p = fmod(progress, 1);
+	return sin(progress * M_PI * 2);
+}
+
 double SampleModel::VAL(SampleModelControls index) {
 	if (isAnimating() && index != NSFW) {
 		double progress = animateCounter / (double) ANIMATION_FRAMES_COUNT;
@@ -49,7 +54,10 @@ double SampleModel::VAL(SampleModelControls index) {
 		case BOY_GIRL_SIDE:
 			return 1;
 		case BOY_GIRL_ANGLE:
-			return - progress * 10 - 10; // TODO: ease!
+			return animationEase(progress) * 5 + 10;
+		case GIRL_LEFT_UPPER_LEG_ROLL_ANGLE:
+		case GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE:
+			return animationEase(progress) * 15 + 60;
 		}
 	}
 	return ModelerApplication::Instance()->GetControlValue(index);
@@ -458,8 +466,8 @@ int main()
 	controls[BOY_ELBOW_ANGLE] = ModelerControl("Boy - elbow", 0, 150, 0.1, 30);
 	controls[BOY_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left leg (pitch)", -45, 90, 0.1, 0);
 	controls[BOY_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right leg (pitch)", -45, 90, 0.1, 0);
-	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -15, 45, 0.1, 0);
-	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -15, 45, 0.1, 0);
+	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -15, 75, 0.1, 0);
+	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -15, 75, 0.1, 0);
 	controls[BOY_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - left leg (yaw)", -30, 60, 0.1, 0);
 	controls[BOY_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - right leg (yaw)", -30, 60, 0.1, 0);
 	controls[BOY_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left knee", 0, 120, 0.1, 0);
@@ -479,8 +487,8 @@ int main()
 	controls[GIRL_ELBOW_RIGHT_ANGLE] = ModelerControl("Girl - right elbow", 0, 150, 0.1, 30);
 	controls[GIRL_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left leg (pitch)", -45, 90, 0.1, 0);
 	controls[GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right leg (pitch)", -45, 90, 0.1, 0);
-	controls[GIRL_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - left leg (roll)", -15, 45, 0.1, 0);
-	controls[GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - right leg (roll)", -15, 45, 0.1, 0);
+	controls[GIRL_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - left leg (roll)", -15, 75, 0.1, 0);
+	controls[GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - right leg (roll)", -15, 75, 0.1, 0);
 	controls[GIRL_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - left leg (yaw)", -30, 60, 0.1, 0);
 	controls[GIRL_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - right leg (yaw)", -30, 60, 0.1, 0);
 	controls[GIRL_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left knee", 0, 120, 0.1, 0);
