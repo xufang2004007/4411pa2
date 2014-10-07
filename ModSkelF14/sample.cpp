@@ -127,11 +127,13 @@ void SampleModel::draw()
 					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
 
 					// foot
-					GLMATRIX({
-						glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
-						glRotated(180 - VAL(BOY_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
-						drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
-					});
+					if (VAL(LVL_DETAIL) >= 2) {
+						GLMATRIX({
+							glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
+							glRotated(180 - VAL(BOY_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
+							drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
+						});
+					}
 
 				});
 
@@ -152,13 +154,15 @@ void SampleModel::draw()
 					glTranslated(0, 0, -BOY_UPPER_LEG_LENGTH);
 					glRotated(180 + VAL(BOY_RIGHT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
-
+					
 					// foot
-					GLMATRIX({
-						glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
-						glRotated(180 - VAL(BOY_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
-						drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
-					});
+					if (VAL(LVL_DETAIL) >= 2) {
+						GLMATRIX({
+							glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
+							glRotated(180 - VAL(BOY_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
+							drawBoxFromBottomCenter(BOY_FOOT_WIDTH, BOY_FOOT_THICKNESS, -BOY_FOOT_LENGTH);
+						});
+					}
 
 				});
 
@@ -188,17 +192,19 @@ void SampleModel::drawGirl() {
 				drawSphere(GIRL_HEAD_RADIUS);
 
 				// eyes
-				GLCOLOR(COLOR_EYES, {
-					GLMATRIX({
-						glTranslated(GIRL_EYES_COORD);
-						drawSphere(GIRL_EYES_RADIUS);
-					});
+				if (VAL(LVL_DETAIL) >= 3) {
+					GLCOLOR(COLOR_EYES, {
+						GLMATRIX({
+							glTranslated(GIRL_EYES_COORD);
+							drawSphere(GIRL_EYES_RADIUS);
+						});
 
-					GLMATRIX({
-						glTranslated(-GIRL_EYES_COORD);
-						drawSphere(GIRL_EYES_RADIUS);
+						GLMATRIX({
+							glTranslated(-GIRL_EYES_COORD);
+							drawSphere(GIRL_EYES_RADIUS);
+						});
 					});
-				});
+				}
 
 			});
 
@@ -280,13 +286,15 @@ void SampleModel::drawGirl() {
 				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 				// foot
-				GLMATRIX({
-					glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
-					glRotated(90 + VAL(GIRL_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
-					glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
-					glScaled(1, 2, 0.5);
-					drawSphere(0.25);
-				});
+				if (VAL(LVL_DETAIL) >= 2) {
+					GLMATRIX({
+						glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
+						glRotated(90 + VAL(GIRL_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
+						glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
+						glScaled(1, 2, 0.5);
+						drawSphere(0.25);
+					});
+				}
 
 			});
 
@@ -310,13 +318,15 @@ void SampleModel::drawGirl() {
 				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 				// foot
-				GLMATRIX({
-					glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
-					glRotated(90 + VAL(GIRL_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
-					glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
-					glScaled(1, 2, 0.5);
-					drawSphere(0.25);
-				});
+				if (VAL(LVL_DETAIL) >= 2) {
+					GLMATRIX({
+						glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
+						glRotated(90 + VAL(GIRL_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
+						glTranslated(0, GIRL_LEG_RADIUS, -GIRL_LEG_RADIUS / 2);
+						glScaled(1, 2, 0.5);
+						drawSphere(0.25);
+					});
+				}
 
 			});
 
@@ -333,6 +343,7 @@ int main()
 	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
+	controls[LVL_DETAIL] = ModelerControl("Level of detail", 0, 3, 1, 3);
 	controls[BOY_GIRL_SIDE] = ModelerControl("Character orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
 	controls[NSFW] = ModelerControl("NSFW", 0, 1, 1, 0);
