@@ -81,10 +81,12 @@ void SampleModel::draw()
 
 							drawBoxFromBottomCenter(BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_RADIUS, BOY_LOWER_ARM_LENGTH);
 
-							GLMATRIX({
-								glTranslated(0, -0.125, BOY_LOWER_ARM_LENGTH);
-								drawBox(i * 0.125, 0.25, 0.375);
-							});
+							if (VAL(LVL_DETAIL) >= 1) {
+								GLMATRIX({
+									glTranslated(0, -0.125, BOY_LOWER_ARM_LENGTH);
+									drawBox(i * 0.125, 0.25, 0.375);
+								});
+							}
 
 						});
 
@@ -127,7 +129,7 @@ void SampleModel::draw()
 					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
 
 					// foot
-					if (VAL(LVL_DETAIL) >= 2) {
+					if (VAL(LVL_DETAIL) >= 1) {
 						GLMATRIX({
 							glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
 							glRotated(180 - VAL(BOY_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
@@ -156,7 +158,7 @@ void SampleModel::draw()
 					drawBoxFromBottomCenter(BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_RADIUS, BOY_LOWER_LEG_LENGTH);
 					
 					// foot
-					if (VAL(LVL_DETAIL) >= 2) {
+					if (VAL(LVL_DETAIL) >= 1) {
 						GLMATRIX({
 							glTranslated(0, 0, BOY_LOWER_LEG_LENGTH);
 							glRotated(180 - VAL(BOY_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
@@ -191,17 +193,23 @@ void SampleModel::drawGirl() {
 				glScaled(1, 1, GIRL_HEAD_LENGTH);
 				drawSphere(GIRL_HEAD_RADIUS);
 
-				// eyes
-				if (VAL(LVL_DETAIL) >= 3) {
+				// eyes and mouth
+				if (VAL(LVL_DETAIL) >= 2) {
 					GLCOLOR(COLOR_EYES, {
 						GLMATRIX({
 							glTranslated(GIRL_EYES_COORD);
 							drawSphere(GIRL_EYES_RADIUS);
 						});
-
 						GLMATRIX({
 							glTranslated(-GIRL_EYES_COORD);
 							drawSphere(GIRL_EYES_RADIUS);
+						});
+					});
+					GLCOLOR(COLOR_MOUTH, {
+						GLMATRIX({
+							glTranslated(GIRL_MOUTH_COORD);
+							glScaled(1, 0.85, 0.35);
+							drawSphere(0.4);
 						});
 					});
 				}
@@ -231,12 +239,14 @@ void SampleModel::drawGirl() {
 					glRotated(VAL(GIRL_ELBOW_LEFT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
-					GLMATRIX({
-						glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
-						glRotated(90, 0, 1, 0);
-						glScaled(1.25, 1, 1);
-						drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
-					});
+					if (VAL(LVL_DETAIL) >= 1) {
+						GLMATRIX({
+							glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
+							glRotated(90, 0, 1, 0);
+							glScaled(1.25, 1, 1);
+							drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+						});
+					}
 
 				});
 
@@ -255,12 +265,14 @@ void SampleModel::drawGirl() {
 					glRotated(VAL(GIRL_ELBOW_RIGHT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
-					GLMATRIX({
-						glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
-						glRotated(90, 0, -1, 0);
-						glScaled(1.25, 1, 1);
-						drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
-					});
+					if (VAL(LVL_DETAIL) >= 1) {
+						GLMATRIX({
+							glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
+							glRotated(90, 0, -1, 0);
+							glScaled(1.25, 1, 1);
+							drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+						});
+					}
 
 				});
 
@@ -286,7 +298,7 @@ void SampleModel::drawGirl() {
 				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 				// foot
-				if (VAL(LVL_DETAIL) >= 2) {
+				if (VAL(LVL_DETAIL) >= 1) {
 					GLMATRIX({
 						glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
 						glRotated(90 + VAL(GIRL_LEFT_FOOT_PITCH_ANGLE), 1, 0, 0);
@@ -318,7 +330,7 @@ void SampleModel::drawGirl() {
 				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 
 				// foot
-				if (VAL(LVL_DETAIL) >= 2) {
+				if (VAL(LVL_DETAIL) >= 1) {
 					GLMATRIX({
 						glTranslated(0, 0, GIRL_LOWER_LEG_LENGTH);
 						glRotated(90 + VAL(GIRL_RIGHT_FOOT_PITCH_ANGLE), 1, 0, 0);
@@ -340,10 +352,16 @@ int main()
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
+	controls[DBG0] = ModelerControl("Dbg0", -1, 1, 0.01f, 0);
+	controls[DBG1] = ModelerControl("Dbg1", -1, 1, 0.01f, 0);
+	controls[DBG2] = ModelerControl("Dbg2", -1, 1, 0.01f, 0.75);
+	controls[DBG3] = ModelerControl("Dbg3", -1, 1, 0.01f, 0.25);
+
 	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
-	controls[LVL_DETAIL] = ModelerControl("Level of detail", 0, 3, 1, 3);
+	controls[LVL_DETAIL] = ModelerControl("Level of detail", 0, 2, 1, 2);
+	controls[BOY_GIRL_BIND] = ModelerControl("Bind characters", 0, 1, 1, 0);
 	controls[BOY_GIRL_SIDE] = ModelerControl("Character orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
 	controls[NSFW] = ModelerControl("NSFW", 0, 1, 1, 0);
