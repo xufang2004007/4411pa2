@@ -102,6 +102,14 @@ void SampleModel::draw()
 				});
 			});
 
+			// penis
+			if (VAL(NSFW)) {
+				GLMATRIX({
+					glRotated(90, 1, 0, 0);
+					drawBoxFromBottomCenter(BOY_PENIS_DIAMETER, BOY_PENIS_DIAMETER, BOY_PENIS_LENGTH);
+				});
+			}
+
 			// left leg / feet
 			GLMATRIX({
 				glTranslated(BOY_BODY_X / 4, 0, 0);
@@ -195,11 +203,13 @@ void SampleModel::drawGirl() {
 			});
 
 			// breast
-			for (int i = -1; i <= 1; i += 2){
-				GLMATRIX({
-					glTranslated(i*GIRL_BREAST_RADIUS*0.75, GIRL_BREAST_RADIUS / 2, -GIRL_BODY_LENGTH*0.25);
-					drawSphere(GIRL_BREAST_RADIUS);
-				});
+			if (VAL(NSFW)) {
+				for (int i = -1; i <= 1; i += 2){
+					GLMATRIX({
+						glTranslated(i*GIRL_BREAST_RADIUS*0.75, GIRL_BREAST_RADIUS / 2, -GIRL_BODY_LENGTH*0.25);
+						drawSphere(GIRL_BREAST_RADIUS);
+					});
+				}
 			}
 
 			// left arm
@@ -325,6 +335,7 @@ int main()
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
 	controls[BOY_GIRL_SIDE] = ModelerControl("Character orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
+	controls[NSFW] = ModelerControl("NSFW", 0, 1, 1, 0);
 
 	controls[BOY_HEAD_PITCH] = ModelerControl("Boy - head pitch", -45, 90, 0.1f, 0);
 	controls[BOY_HEAD_TILT] = ModelerControl("Boy - head tilt", -45, 45, 0.1f, 0);
