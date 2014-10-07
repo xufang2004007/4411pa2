@@ -4,9 +4,13 @@
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include <FL/gl.h>
-
+#include <gl/GLU.h>
 #include "modelerglobals.h"
 #include "glhelper.h"
+#include "camera.h"
+
+
+
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView
@@ -17,6 +21,8 @@ public:
 
 	virtual void draw();
 	virtual void drawGirl();
+private:
+	void ModelerViewDraw();
 };
 
 // We need to make a creator function, mostly because of
@@ -33,6 +39,46 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 	});
 }
 
+void SampleModel::ModelerViewDraw()
+{
+
+	//static GLfloat lightPosition0[] = { 4, 2, -4, 0 };
+	//static GLfloat lightDiffuse0[] = { 1, 1, 1, 1 };
+	GLfloat lightPosition0[] = { VAL(LIGHT_DIR_X), VAL(LIGHT_DIR_Y), VAL(LIGHT_DIR_Z), 0 };
+	GLfloat lightDiffuse0[] = { 1, 1, 1, 1 };
+	static GLfloat lightPosition1[] = { 5, 5, 5, 1 };
+	static GLfloat lightDiffuse1[] = { 1, 1, 1, 1 };
+	
+	if (!valid())
+	{
+		glShadeModel(GL_SMOOTH);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHT1);
+		glEnable(GL_NORMALIZE);
+	}
+
+	glViewport(0, 0, w(), h());
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(30.0, float(w()) / float(h()), 1.0, 100.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_camera->applyViewingTransform();
+
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse0);
+	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightDiffuse1);
+
+	//Add ambient light
+	GLfloat ambientColor[] = { 0.8f, 0.8f, 0.8f, 1.0f }; //Color(0.2, 0.2, 0.2)
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+}
+
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
@@ -40,7 +86,11 @@ void SampleModel::draw()
 	// This call takes care of a lot of the nasty projection 
 	// matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
-	ModelerView::draw();
+
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);//background color
+
+	//ModelerView::draw();
+	ModelerViewDraw();
 
 	// draw the sample model
 	setAmbientColor(.1f, .1f, .1f);
@@ -383,7 +433,9 @@ int main()
 	controls[GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right knee", 0, 120, 0.1f, 0);
 	controls[GIRL_LEFT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - left ankle", 0, 105, 0.1f, 90);
 	controls[GIRL_RIGHT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - right ankle", 0, 105, 0.1f, 90);
-
+	controls[LIGHT_DIR_X] = ModelerControl("Light Direction X", -100, 100, 0.1f, 4);
+	controls[LIGHT_DIR_Y] = ModelerControl("Light Direction Y", -100, 100, 0.1f, -10);
+	controls[LIGHT_DIR_Z] = ModelerControl("Light Direction Z", -100, 100, 0.1f, 4);
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
 }
