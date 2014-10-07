@@ -97,6 +97,7 @@ void SampleModel::draw()
 					glRotated(BEA, 1, 0, 0);
 					glTranslated(0, 0, BOY_LOWER_ARM_LENGTH);
 					glRotated(VAL(BOY_GIRL_ANGLE) - BSA - BEA, 1, 0, 0);
+					glRotated(VAL(BOY_GIRL_SIDE) * 180, 0, 0, 1);
 					drawGirl();
 				});
 			});
@@ -322,7 +323,7 @@ int main()
 	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1f, 0);
 	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1f, 0);
 	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1f, 0);
-	controls[BOY_GIRL_SIDE] = ModelerControl("Characters on same orientation", 0, 1, 1, 0);
+	controls[BOY_GIRL_SIDE] = ModelerControl("Character orientation", 0, 1, 1, 0);
 	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1f, 180);
 
 	controls[BOY_HEAD_PITCH] = ModelerControl("Boy - head pitch", -45, 90, 0.1f, 0);
