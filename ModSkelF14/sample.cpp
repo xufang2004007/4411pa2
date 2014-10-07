@@ -17,10 +17,13 @@ public:
 	SampleModel(int x, int y, int w, int h, char *label)
 		: ModelerView(x, y, w, h, label) { }
 
-	virtual void draw();
-	virtual void drawGirl();
+	void draw();
+	void drawGirl();
 private:
 	void ModelerViewDraw();
+	bool isAnimating();
+	double VAL(SampleModelControls index);
+	int animateCounter;
 };
 
 // We need to make a creator function, mostly because of
@@ -35,6 +38,15 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 		glTranslated(-x / 2, -y / 2, 0);
 		drawBox(x, y, z);
 	});
+}
+
+double SampleModel::VAL(SampleModelControls index) {
+	double val = ModelerApplication::Instance()->GetControlValue(index);
+	if (isAnimating() && index != NSFW) {
+		double progress = animateCounter / ANIMATION_FRAMES_COUNT;
+		// TODO: set detailed movement
+	}
+	return val;
 }
 
 void SampleModel::ModelerViewDraw()
@@ -77,6 +89,12 @@ void SampleModel::ModelerViewDraw()
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 }
 
+bool SampleModel::isAnimating()
+{
+	return ModelerApplication::Instance()->m_animating;
+}
+
+
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
@@ -85,7 +103,8 @@ void SampleModel::draw()
 	// matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
 
-	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);//background color
+	animateCounter++;
+	animateCounter %= ANIMATION_FRAMES_COUNT;
 
 	//ModelerView::draw();
 	ModelerViewDraw();
@@ -149,15 +168,15 @@ void SampleModel::draw()
 				}
 
 				if (VAL(BOY_GIRL_BIND)) {
-				GLMATRIX({
-					glRotated(BSA, 1, 0, 0);
-					glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
-					glRotated(BEA, 1, 0, 0);
-					glTranslated(0, 0, BOY_LOWER_ARM_LENGTH);
-					glRotated(VAL(BOY_GIRL_ANGLE) - BSA - BEA, 1, 0, 0);
-					glRotated(VAL(BOY_GIRL_SIDE) * 180, 0, 0, 1);
-					drawGirl();
-				});
+					GLMATRIX({
+						glRotated(BSA, 1, 0, 0);
+						glTranslated(0, 0, BOY_UPPER_ARM_LENGTH);
+						glRotated(BEA, 1, 0, 0);
+						glTranslated(0, 0, BOY_LOWER_ARM_LENGTH);
+						glRotated(VAL(BOY_GIRL_ANGLE) - BSA - BEA, 1, 0, 0);
+						glRotated(VAL(BOY_GIRL_SIDE) * 180, 0, 0, 1);
+						drawGirl();
+					});
 				}
 			});
 
@@ -410,8 +429,6 @@ void SampleModel::drawGirl() {
 		});
 	});
 }
-
-
 
 int main()
 {

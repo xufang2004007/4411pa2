@@ -22,6 +22,10 @@ enum SampleModelControls {
 	NUMCONTROLS
 };
 
+// The animation will repeat itself after such many frames 
+
+#define ANIMATION_FRAMES_COUNT	120
+
 // Colors
 
 #define COLOR_EYES	0.0f, 0.0f, 0.0f
@@ -116,9 +120,5 @@ enum SampleModelControls {
 		// Foot
 			 // GIRL_LEFT_FOOT_PITCH_ANGLE			variable
 			 // GIRL_RIGHT_FOOT_PITCH_ANGLE			variable
-
-// We'll be getting the instance of the application a lot; 
-// might as well have it as a macro.
-#define VAL(x) (ModelerApplication::Instance()->GetControlValue(x))
 
 #endif
