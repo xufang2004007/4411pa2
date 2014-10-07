@@ -6,6 +6,7 @@
 #include "vec.h"
 #include "mat.h"
 
+
 //==========[ class Camera ]===================================================
 
 typedef enum { kActionNone, kActionTranslate, kActionRotate, kActionZoom, kActionTwist,} MouseAction_t;
@@ -83,6 +84,7 @@ public:
 
 	// gluLookAt equivalent
 	void lookAt(Vec3f eye, Vec3f at, Vec3f up);
+
 };
 
 #endif
