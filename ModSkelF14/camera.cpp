@@ -178,9 +178,66 @@ void Camera::applyViewingTransform() {
 
 	// Place the camera at mPosition, aim the camera at
 	// mLookAt, and twist the camera such that mUpVector is up
-	gluLookAt(	mPosition[0], mPosition[1], mPosition[2],
-				mLookAt[0],   mLookAt[1],   mLookAt[2],
-				mUpVector[0], mUpVector[1], mUpVector[2]);
+	lookAt(mPosition,mLookAt,mUpVector);
+
 }
+
+void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
+{
+	double m[16];
+	double x[3], y[3], z[3];
+	double mag;
+
+	/* Make rotation matrix */
+	/* Z vector */
+	z[0] = eye[0] - at[0];
+	z[1] = eye[1] - at[1];
+	z[2] = eye[2] - at[2];
+	mag = sqrt(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
+	if (mag) {  /* mpichler, 19950515 */
+		z[0] /= mag;
+		z[1] /= mag;
+		z[2] /= mag;
+	}
+	/* Y vector */
+	y[0] = up[0];
+	y[1] = up[1];
+	y[2] = up[2];
+	/* X vector = Y cross Z */
+	x[0] = y[1] * z[2] - y[2] * z[1];
+	x[1] = -y[0] * z[2] + y[2] * z[0];
+	x[2] = y[0] * z[1] - y[1] * z[0];
+	/* Recompute Y = Z cross X */
+	y[0] = z[1] * x[2] - z[2] * x[1];
+	y[1] = -z[0] * x[2] + z[2] * x[0];
+	y[2] = z[0] * x[1] - z[1] * x[0];
+	/* mpichler, 19950515 */
+	/* cross product gives area of parallelogram, which is < 1.0 for
+	* non-perpendicular unit-length vectors; so normalize x, y here
+	*/
+	mag = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+	if (mag) {
+		x[0] /= mag;
+		x[1] /= mag;
+		x[2] /= mag;
+	}
+	mag = sqrt(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
+	if (mag) {
+		y[0] /= mag;
+		y[1] /= mag;
+		y[2] /= mag;
+	}
+#define M(row,col)  m[col*4+row] 
+	M(0, 0) = x[0];  M(0, 1) = x[1];  M(0, 2) = x[2];  M(0, 3) = 0.0;
+	M(1, 0) = y[0];  M(1, 1) = y[1];  M(1, 2) = y[2];  M(1, 3) = 0.0;
+	M(2, 0) = z[0];  M(2, 1) = z[1];  M(2, 2) = z[2];  M(2, 3) = 0.0;
+	M(3, 0) = 0.0;   M(3, 1) = 0.0;   M(3, 2) = 0.0;   M(3, 3) = 1.0;
+#undef M 
+	glMultMatrixd(m);
+	/* Translate Eye to Origin */
+	glTranslated(-eye[0], -eye[1], -eye[2]);
+}
+
+
 
 #pragma warning(pop)
