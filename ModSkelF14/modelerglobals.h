@@ -102,8 +102,4 @@ enum SampleModelControls
 // might as well have it as a macro.
 #define VAL(x) (ModelerApplication::Instance()->GetControlValue(x))
 
-// do NOT use glPushMatrix() directly, as you might forget to pop them. Also, it will cause the indentation to corrupt with some IDEs.
-// use this instead
-#define GLMATRIX(stmt) { glPushMatrix(); stmt; glPopMatrix(); }
-
 #endif
