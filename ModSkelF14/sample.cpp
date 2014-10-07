@@ -41,12 +41,18 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 }
 
 double SampleModel::VAL(SampleModelControls index) {
-	double val = ModelerApplication::Instance()->GetControlValue(index);
 	if (isAnimating() && index != NSFW) {
-		double progress = animateCounter / ANIMATION_FRAMES_COUNT;
-		// TODO: set detailed movement
+		double progress = animateCounter / (double) ANIMATION_FRAMES_COUNT;
+		switch (index) {
+		case BOY_GIRL_BIND:
+			return 1;
+		case BOY_GIRL_SIDE:
+			return 1;
+		case BOY_GIRL_ANGLE:
+			return - progress * 10 - 10; // TODO: ease!
+		}
 	}
-	return val;
+	return ModelerApplication::Instance()->GetControlValue(index);
 }
 
 void SampleModel::ModelerViewDraw()
@@ -104,7 +110,7 @@ void SampleModel::draw()
 	// projection matrix, don't bother with this ...
 
 	animateCounter++;
-	animateCounter %= ANIMATION_FRAMES_COUNT;
+	animateCounter = animateCounter % ANIMATION_FRAMES_COUNT;
 
 	//ModelerView::draw();
 	ModelerViewDraw();

@@ -24,7 +24,7 @@ enum SampleModelControls {
 
 // The animation will repeat itself after such many frames 
 
-#define ANIMATION_FRAMES_COUNT	120
+#define ANIMATION_FRAMES_COUNT	30
 
 // Colors
 
