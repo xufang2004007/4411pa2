@@ -9,7 +9,7 @@
 
 enum SampleModelControls { 
 	XPOS, YPOS, ZPOS, LVL_DETAIL,
-	BOY_GIRL_SIDE, BOY_GIRL_ANGLE, NSFW,
+	BOY_GIRL_BIND, BOY_GIRL_SIDE, BOY_GIRL_ANGLE, NSFW,
 	BOY_HEAD_PITCH, BOY_HEAD_TILT, BOY_SHOULDER_ANGLE, BOY_ELBOW_ANGLE,
 	BOY_LEFT_UPPER_LEG_PITCH_ANGLE, BOY_RIGHT_UPPER_LEG_PITCH_ANGLE, BOY_LEFT_UPPER_LEG_ROLL_ANGLE, BOY_RIGHT_UPPER_LEG_ROLL_ANGLE, BOY_LEFT_UPPER_LEG_YAW_ANGLE, BOY_RIGHT_UPPER_LEG_YAW_ANGLE,
 	BOY_LEFT_LOWER_LEG_PITCH_ANGLE, BOY_RIGHT_LOWER_LEG_PITCH_ANGLE, BOY_LEFT_FOOT_PITCH_ANGLE, BOY_RIGHT_FOOT_PITCH_ANGLE, 
@@ -27,6 +27,7 @@ enum SampleModelControls {
 #define COLOR_EYES	0.0f, 0.0f, 0.0f
 #define COLOR_BOY_BODY  0.5f, 0.6f, 1.0f
 #define COLOR_GIRL_BODY  1.0f, 0.6f, 0.5f
+#define COLOR_MOUTH	1.0f, 0.4f, 0.4f
 
 // Dimensions (please, trail each integer with `.0` to make sure it is treated as a double)
 	// Common
@@ -48,8 +49,8 @@ enum SampleModelControls {
 		#define BOY_HEAD_X							1.125
 		#define BOY_HEAD_Y							0.875
 		#define BOY_HEAD_Z							1.25
-			// BOY_HEAD_PITCH						variable
-			// BOY_HEAD_TILT						variable
+			 // BOY_HEAD_PITCH						variable
+			 // BOY_HEAD_TILT						variable
 		// Leg
 		#define BOY_UPPER_LEG_LENGTH				1.25
 		#define BOY_UPPER_LEG_X						0.625
@@ -99,6 +100,7 @@ enum SampleModelControls {
 		#define GIRL_HEAD_RADIUS					0.625
 		#define GIRL_EYES_COORD						0.25, 0.5, 0.125
 		#define GIRL_EYES_RADIUS					0.1
+		#define GIRL_MOUTH_COORD					0, 0.3, -0.2
 		// Leg
 		#define GIRL_LEG_RADIUS						0.2
 		#define GIRL_UPPER_LEG_LENGTH				1.25

@@ -7,10 +7,8 @@
 #include <gl/GLU.h>
 #include "modelerglobals.h"
 #include "glhelper.h"
+#include "camera.h"
 #include "handdrawer.cpp"
-
-
-
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView
@@ -137,9 +135,10 @@ void SampleModel::draw()
 									if (VAL(LVL_DETAIL) >= 2) {
 										glRotated(- i * 90, 0, 0, 1);
 										glScaled(i * HAND_SCALE_RATIO, HAND_SCALE_RATIO, HAND_SCALE_RATIO);
+										glTranslated(-1.25, 0.25, 0);
 										HandDrawer::draw();
 									} else {
-									drawBox(i * 0.125, 0.25, 0.375);
+										drawBox(i * 0.125, 0.25, 0.375);
 									}
 								});
 							}
@@ -420,10 +419,6 @@ int main()
 	// Constructor is ModelerControl(name, minimumvalue, maximumvalue, 
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
-	controls[DBG0] = ModelerControl("Dbg0", -1, 1, 0.01, 0);
-	controls[DBG1] = ModelerControl("Dbg1", -1, 1, 0.01, 0);
-	controls[DBG2] = ModelerControl("Dbg2", -1, 1, 0.01, 0.75);
-	controls[DBG3] = ModelerControl("Dbg3", -1, 1, 0.01, 0.25);
 
 	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1, 2.5);
 	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1, 0);
