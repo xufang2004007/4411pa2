@@ -1,7 +1,8 @@
 #include <windows.h>
 #include <Fl/gl.h>
+#include <Fl/fl_ask.h>
 #include <gl/glu.h>
-
+#include <sstream>
 #include "camera.h"
 
 #pragma warning(push)
@@ -15,6 +16,7 @@ const float kMouseRotationSensitivity		= 1.0f/90.0f;
 const float kMouseTranslationXSensitivity	= 0.03f;
 const float kMouseTranslationYSensitivity	= 0.03f;
 const float kMouseZoomSensitivity			= 0.08f;
+const float kMouseTwistSensitivity			= 0.03f;
 
 void MakeDiagonal(Mat4f &m, float k)
 {
@@ -79,8 +81,6 @@ void Camera::calculateViewingTransformParameters()
 	Mat4f twistXform;
 	Mat4f originXform;
 
-	Vec3f upVector;
-
 	MakeHTrans(dollyXform, Vec3f(0,0,mDolly));
 	MakeHRotY(azimXform, mAzimuth);
 	MakeHRotX(elevXform, mElevation);
@@ -90,11 +90,10 @@ void Camera::calculateViewingTransformParameters()
 	mPosition = Vec3f(0,0,0);
 	// grouped for (mat4 * vec3) ops instead of (mat4 * mat4) ops
 	mPosition = originXform * (azimXform * (elevXform * (dollyXform * mPosition)));
+	Vec3f nx = originXform * (azimXform * (elevXform * (dollyXform * Vec3f(1, 0, 0))));
+	Vec3f ny = originXform * (azimXform * (elevXform * (dollyXform * Vec3f(0, 1, 0))));
 
-	if ( fmod((double)mElevation, 2.0*M_PI) < 3*M_PI/2 && fmod((double)mElevation, 2.0*M_PI) > M_PI/2 )
-		mUpVector= Vec3f(0,-1,0);
-	else
-		mUpVector= Vec3f(0,1,0);
+	mUpVector = nx*sin(mTwist) + ny*cos(mTwist);
 
 	mDirtyTransform = false;
 }
@@ -155,11 +154,11 @@ void Camera::dragMouse( int x, int y )
 	case kActionZoom:
 		{
 			float dDolly = -mouseDelta[1] * kMouseZoomSensitivity;
+			float dTwist = mouseDelta[0] * kMouseTwistSensitivity;
 			setDolly(getDolly() + dDolly);
+			setTwist(getTwist() + dTwist);
 			break;
 		}
-	case kActionTwist:
-		// Not implemented
 	default:
 		break;
 	}
@@ -194,7 +193,7 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 	z[1] = eye[1] - at[1];
 	z[2] = eye[2] - at[2];
 	mag = sqrt(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
-	if (mag) {  /* mpichler, 19950515 */
+	if (mag) {
 		z[0] /= mag;
 		z[1] /= mag;
 		z[2] /= mag;
@@ -211,7 +210,6 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 	y[0] = z[1] * x[2] - z[2] * x[1];
 	y[1] = -z[0] * x[2] + z[2] * x[0];
 	y[2] = z[0] * x[1] - z[1] * x[0];
-	/* mpichler, 19950515 */
 	/* cross product gives area of parallelogram, which is < 1.0 for
 	* non-perpendicular unit-length vectors; so normalize x, y here
 	*/
@@ -227,12 +225,12 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 		y[1] /= mag;
 		y[2] /= mag;
 	}
-#define M(row,col)  m[col*4+row] 
-	M(0, 0) = x[0];  M(0, 1) = x[1];  M(0, 2) = x[2];  M(0, 3) = 0.0;
-	M(1, 0) = y[0];  M(1, 1) = y[1];  M(1, 2) = y[2];  M(1, 3) = 0.0;
-	M(2, 0) = z[0];  M(2, 1) = z[1];  M(2, 2) = z[2];  M(2, 3) = 0.0;
-	M(3, 0) = 0.0;   M(3, 1) = 0.0;   M(3, 2) = 0.0;   M(3, 3) = 1.0;
-#undef M 
+	#define M(row,col)  m[col*4+row] 
+		M(0, 0) = x[0];  M(0, 1) = x[1];  M(0, 2) = x[2];  M(0, 3) = 0.0;
+		M(1, 0) = y[0];  M(1, 1) = y[1];  M(1, 2) = y[2];  M(1, 3) = 0.0;
+		M(2, 0) = z[0];  M(2, 1) = z[1];  M(2, 2) = z[2];  M(2, 3) = 0.0;
+		M(3, 0) = 0.0;   M(3, 1) = 0.0;   M(3, 2) = 0.0;   M(3, 3) = 1.0;
+	#undef M 
 	glMultMatrixd(m);
 	/* Translate Eye to Origin */
 	glTranslated(-eye[0], -eye[1], -eye[2]);

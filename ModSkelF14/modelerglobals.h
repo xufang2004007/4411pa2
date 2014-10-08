@@ -8,6 +8,7 @@
 // Controls
 
 enum SampleModelControls { 
+	DBG0, DBG1, DBG2,
 	XPOS, YPOS, ZPOS, LVL_DETAIL, NSFW,
 	LIGHT_DIR_X, LIGHT_DIR_Y, LIGHT_DIR_Z,
 	CUSTOM_ANIMATION, // special marker, do NOT move. all controls of angles must be below, and anything else must be above

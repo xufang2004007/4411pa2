@@ -9,7 +9,7 @@
 
 //==========[ class Camera ]===================================================
 
-typedef enum { kActionNone, kActionTranslate, kActionRotate, kActionZoom, kActionTwist,} MouseAction_t;
+typedef enum { kActionNone, kActionTranslate, kActionRotate, kActionZoom } MouseAction_t;
 
 class Camera {
     

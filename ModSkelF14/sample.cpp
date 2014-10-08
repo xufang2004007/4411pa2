@@ -145,7 +145,6 @@ double SampleModel::VAL(SampleModelControls index) {
 
 void SampleModel::ModelerViewDraw()
 {
-
 	//static GLfloat lightPosition0[] = { 4, 2, -4, 0 };
 	//static GLfloat lightDiffuse0[] = { 1, 1, 1, 1 };
 	GLfloat lightPosition0[] = { VAL(LIGHT_DIR_X), VAL(LIGHT_DIR_Y), VAL(LIGHT_DIR_Z), 0 };
@@ -531,6 +530,10 @@ int main()
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
 
+	createModelerControl(DBG0, "Dbg 0", -1, 1, 0.01, 0);
+	createModelerControl(DBG1, "Dbg 1", -1, 1, 0.01, 1);
+	createModelerControl(DBG2, "Dbg 2", -1, 1, 0.01, 0);
+
 	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 2.5);
 	createModelerControl(YPOS, "Y Position", -5, 5, 0.1, 0);
 	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
@@ -583,6 +586,7 @@ int main()
 	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
+	srand(25486745);
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
 }
