@@ -357,7 +357,7 @@ void SampleModel::drawGirl() {
 		// body
 		GLMATRIX({
 			glScaled(1, 0.5, 1);
-			drawCylinder(GIRL_BODY_LENGTH, GIRL_WAIST_RADIUS, GIRL_SHOULDER_LENGTH);
+			drawCylinder(GIRL_BODY_LENGTH, GIRL_WAIST_RADIUS, VAL(GIRL_SHOULDER_LENGTH));
 		});
 
 		GLMATRIX({
@@ -406,7 +406,7 @@ void SampleModel::drawGirl() {
 
 			// left arm
 			GLMATRIX({
-				glTranslated(-1 * GIRL_SHOULDER_LENGTH, 0, 0);
+				glTranslated(-1 * VAL(GIRL_SHOULDER_LENGTH), 0, 0);
 				glRotated(90 + VAL(GIRL_SHOULDER_LEFT_ANGLE_FLAP), 0, -1, 0);
 				glRotated(VAL(GIRL_SHOULDER_LEFT_ANGLE_RAISE), -1, 0, 0);
 				glRotated(180 + VAL(GIRL_SHOULDER_LEFT_ANGLE_AXIAL), 0, 0, 1);
@@ -432,7 +432,7 @@ void SampleModel::drawGirl() {
 
 			// right arm
 			GLMATRIX({
-				glTranslated(1 * GIRL_SHOULDER_LENGTH, 0, 0);
+				glTranslated(1 * VAL(GIRL_SHOULDER_LENGTH), 0, 0);
 				glRotated(90 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_FLAP), 0, 1, 0);
 				glRotated(VAL(GIRL_SHOULDER_RIGHT_ANGLE_RAISE), -1, 0, 0);
 				glRotated(180 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL), 0, 0, -1);
@@ -563,6 +563,7 @@ int main()
 
 	createModelerControl(GIRL_HEAD_PITCH, "Girl - head pitch", -45, 90, 0.1, 0);
 	createModelerControl(GIRL_HEAD_TILT, "Girl - head tilt", -45, 45, 0.1, 0);
+	createModelerControl(GIRL_SHOULDER_LENGTH, "Girl - shoulder width", 0.75, 1.25, 0.01, 1);
 	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_FLAP, "Girl - left shoudler (flap)", -90, 90, 0.1, 60);
 	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_FLAP, "Girl - right shoudler (flap)", -90, 90, 0.1, 60);
 	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_RAISE, "Girl - left shoudler (raise)", -180, 180, 0.1, 0);
