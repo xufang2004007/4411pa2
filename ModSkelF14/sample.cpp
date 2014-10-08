@@ -10,6 +10,13 @@
 #include "camera.h"
 #include "handdrawer.cpp"
 
+#define createModelerControl(index, name, minimum, maximum, stepsize, value) {\
+	defaultValues[index] = value;\
+	controls[index] = ModelerControl(name, minimum, maximum, stepsize, value);\
+}
+
+double defaultValues[NUMCONTROLS];
+
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView
 {
@@ -40,24 +47,66 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 	});
 }
 
+/*
+double animationLinear(double progress) {
+	double p = fmod(progress, 1);
+	if (p < 0.25) { return p * 4; }
+	if (p < 0.75) { return 2 - p * 4; }
+	return p * 4 - 4;
+}
+*/
+
 double animationEase(double progress) {
 	double p = fmod(progress, 1);
 	return sin(progress * M_PI * 2);
 }
 
 double SampleModel::VAL(SampleModelControls index) {
-	if (isAnimating() && index != NSFW) {
+	if (isAnimating() && index > CUSTOM_ANIMATION) {
 		double progress = animateCounter / (double) ANIMATION_FRAMES_COUNT;
-		switch (index) {
-		case BOY_GIRL_BIND:
-			return 1;
-		case BOY_GIRL_SIDE:
-			return 1;
-		case BOY_GIRL_ANGLE:
-			return animationEase(progress) * 5 + 10;
-		case GIRL_LEFT_UPPER_LEG_ROLL_ANGLE:
-		case GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE:
-			return animationEase(progress) * 15 + 60;
+		if (VAL(NSFW)) {
+
+		} else {
+			switch (index) {
+			case BOY_GIRL_BIND:
+				return 1;
+			case BOY_GIRL_SIDE:
+				return 1;
+			case BOY_GIRL_ANGLE:
+				return animationEase(progress * 2) * 5 + 10;
+			case GIRL_LEFT_UPPER_LEG_ROLL_ANGLE:
+			case GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE:
+				return animationEase(progress) * 15 + 60;
+			case GIRL_SHOULDER_LEFT_ANGLE_RAISE:
+			case GIRL_SHOULDER_RIGHT_ANGLE_RAISE:
+				return 7.5;
+			case GIRL_SHOULDER_LEFT_ANGLE_FLAP:
+			case GIRL_SHOULDER_RIGHT_ANGLE_FLAP:
+				return animationEase(progress * 4) * 30 - 60;
+			case GIRL_SHOULDER_LEFT_ANGLE_AXIAL:
+			case GIRL_SHOULDER_RIGHT_ANGLE_AXIAL:
+				return -90;
+			case GIRL_ELBOW_LEFT_ANGLE:
+			case GIRL_ELBOW_RIGHT_ANGLE:
+				return 15;
+			case BOY_HEAD_TILT:
+				return animationEase(progress) * 15;
+			case BOY_SHOULDER_ANGLE:
+				return 75;
+			case BOY_ELBOW_ANGLE:
+				return 60;
+			case BOY_LEFT_UPPER_LEG_PITCH_ANGLE:
+				return animationEase(progress * 2) * 30;
+			case BOY_RIGHT_UPPER_LEG_PITCH_ANGLE:
+				return animationEase(progress * 2 + 0.5) * 30;
+			case BOY_LEFT_LOWER_LEG_PITCH_ANGLE:
+				return abs(animationEase(progress * 2)) * 30;
+			case BOY_RIGHT_LOWER_LEG_PITCH_ANGLE:
+				return abs(animationEase(progress * 2 + 0.5)) * 30;
+			}
+		}
+		if (!VAL(CUSTOM_ANIMATION)) {
+			return defaultValues[index];
 		}
 	}
 	return ModelerApplication::Instance()->GetControlValue(index);
@@ -451,50 +500,56 @@ int main()
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
 
-	controls[XPOS] = ModelerControl("X Position", -5, 5, 0.1, 2.5);
-	controls[YPOS] = ModelerControl("Y Position", -5, 5, 0.1, 0);
-	controls[ZPOS] = ModelerControl("Z Position", -5, 5, 0.1, 0);
-	controls[LVL_DETAIL] = ModelerControl("Level of detail", 0, 2, 1, 2);
-	controls[BOY_GIRL_BIND] = ModelerControl("Bind characters", 0, 1, 1, 0);
-	controls[BOY_GIRL_SIDE] = ModelerControl("Character orientation", 0, 1, 1, 0);
-	controls[BOY_GIRL_ANGLE] = ModelerControl("Angle between them two", 0, 360, 0.1, 0);
-	controls[NSFW] = ModelerControl("NSFW", 0, 1, 1, 0);
+	createModelerControl(XPOS, "Position", -5, 5, 0.1, 2.5);
+	createModelerControl(YPOS, "Y Position", -5, 5, 0.1, 0);
+	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
+	createModelerControl(LVL_DETAIL, "Level of detail", 0, 2, 1, 2);
+	createModelerControl(NSFW, "NSFW", 0, 1, 1, 0);
+	createModelerControl(LIGHT_DIR_X, "Light Direction X", -100, 100, 0.1f, 4);
+	createModelerControl(LIGHT_DIR_Y, "Light Direction Y", -100, 100, 0.1f, -10);
+	createModelerControl(LIGHT_DIR_Z, "Light Direction Z", -100, 100, 0.1f, 4);
 
-	controls[BOY_HEAD_PITCH] = ModelerControl("Boy - head pitch", -45, 90, 0.1, 0);
-	controls[BOY_HEAD_TILT] = ModelerControl("Boy - head tilt", -45, 45, 0.1, 0);
-	controls[BOY_SHOULDER_ANGLE] = ModelerControl("Boy - shoulder", 0, 90, 0.1, 45);
-	controls[BOY_ELBOW_ANGLE] = ModelerControl("Boy - elbow", 0, 150, 0.1, 30);
-	controls[BOY_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left leg (pitch)", -45, 90, 0.1, 0);
-	controls[BOY_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right leg (pitch)", -45, 90, 0.1, 0);
-	controls[BOY_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - left leg (roll)", -15, 75, 0.1, 0);
-	controls[BOY_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Boy - right leg (roll)", -15, 75, 0.1, 0);
-	controls[BOY_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - left leg (yaw)", -30, 60, 0.1, 0);
-	controls[BOY_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Boy - right leg (yaw)", -30, 60, 0.1, 0);
-	controls[BOY_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - left knee", 0, 120, 0.1, 0);
-	controls[BOY_RIGHT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Boy - right knee", 0, 120, 0.1, 0);
-	controls[BOY_LEFT_FOOT_PITCH_ANGLE] = ModelerControl("Boy - left ankle", 0, 105, 0.1, 90);
-	controls[BOY_RIGHT_FOOT_PITCH_ANGLE] = ModelerControl("Boy - right ankle", 0, 105, 0.1, 90);
+	createModelerControl(CUSTOM_ANIMATION, "Customizable animation", 0, 1, 1, 0);
 
-	controls[GIRL_HEAD_PITCH] = ModelerControl("Girl - head pitch", -45, 90, 0.1, 0);
-	controls[GIRL_HEAD_TILT] = ModelerControl("Girl - head tilt", -45, 45, 0.1, 0);
-	controls[GIRL_SHOULDER_LEFT_ANGLE_FLAP] = ModelerControl("Girl - left shoudler (flap)", -90, 90, 0.1, 60);
-	controls[GIRL_SHOULDER_RIGHT_ANGLE_FLAP] = ModelerControl("Girl - right shoudler (flap)", -90, 90, 0.1, 60);
-	controls[GIRL_SHOULDER_LEFT_ANGLE_RAISE] = ModelerControl("Girl - left shoudler (raise)", -180, 180, 0.1, 0);
-	controls[GIRL_SHOULDER_RIGHT_ANGLE_RAISE] = ModelerControl("Girl - right shoudler (raise)", -180, 180, 0.1, 0);
-	controls[GIRL_SHOULDER_LEFT_ANGLE_AXIAL] = ModelerControl("Girl - left shoudler (axial)", -90, 90, 0.1, 0);
-	controls[GIRL_SHOULDER_RIGHT_ANGLE_AXIAL] = ModelerControl("Girl - right shoudler (axial)", -90, 90, 0.1, 0);
-	controls[GIRL_ELBOW_LEFT_ANGLE] = ModelerControl("Girl - left elbow", 0, 150, 0.1, 30);
-	controls[GIRL_ELBOW_RIGHT_ANGLE] = ModelerControl("Girl - right elbow", 0, 150, 0.1, 30);
-	controls[GIRL_LEFT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left leg (pitch)", -45, 90, 0.1, 0);
-	controls[GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right leg (pitch)", -45, 90, 0.1, 0);
-	controls[GIRL_LEFT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - left leg (roll)", -15, 75, 0.1, 0);
-	controls[GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE] = ModelerControl("Girl - right leg (roll)", -15, 75, 0.1, 0);
-	controls[GIRL_LEFT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - left leg (yaw)", -30, 60, 0.1, 0);
-	controls[GIRL_RIGHT_UPPER_LEG_YAW_ANGLE] = ModelerControl("Girl - right leg (yaw)", -30, 60, 0.1, 0);
-	controls[GIRL_LEFT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - left knee", 0, 120, 0.1, 0);
-	controls[GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE] = ModelerControl("Girl - right knee", 0, 120, 0.1, 0);
-	controls[GIRL_LEFT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - left ankle", 0, 105, 0.1, 90);
-	controls[GIRL_RIGHT_FOOT_PITCH_ANGLE] = ModelerControl("Girl - right ankle", 0, 105, 0.1, 90);
+	createModelerControl(BOY_GIRL_BIND, "Bind characters", 0, 1, 1, 0);
+	createModelerControl(BOY_GIRL_SIDE, "Character orientation", 0, 1, 1, 0);
+	createModelerControl(BOY_GIRL_ANGLE, "Angle between them two", 0, 360, 0.1, 0);
+
+	createModelerControl(BOY_HEAD_PITCH, "Boy - head pitch", -45, 90, 0.1, 0);
+	createModelerControl(BOY_HEAD_TILT, "Boy - head tilt", -45, 45, 0.1, 0);
+	createModelerControl(BOY_SHOULDER_ANGLE, "Boy - shoulder", 0, 90, 0.1, 45);
+	createModelerControl(BOY_ELBOW_ANGLE, "Boy - elbow", 0, 150, 0.1, 30);
+	createModelerControl(BOY_LEFT_UPPER_LEG_PITCH_ANGLE, "Boy - left leg (pitch)", -45, 90, 0.1, 0);
+	createModelerControl(BOY_RIGHT_UPPER_LEG_PITCH_ANGLE, "Boy - right leg (pitch)", -45, 90, 0.1, 0);
+	createModelerControl(BOY_LEFT_UPPER_LEG_ROLL_ANGLE, "Boy - left leg (roll)", -15, 75, 0.1, 0);
+	createModelerControl(BOY_RIGHT_UPPER_LEG_ROLL_ANGLE, "Boy - right leg (roll)", -15, 75, 0.1, 0);
+	createModelerControl(BOY_LEFT_UPPER_LEG_YAW_ANGLE, "Boy - left leg (yaw)", -30, 60, 0.1, 0);
+	createModelerControl(BOY_RIGHT_UPPER_LEG_YAW_ANGLE, "Boy - right leg (yaw)", -30, 60, 0.1, 0);
+	createModelerControl(BOY_LEFT_LOWER_LEG_PITCH_ANGLE, "Boy - left knee", 0, 120, 0.1, 0);
+	createModelerControl(BOY_RIGHT_LOWER_LEG_PITCH_ANGLE, "Boy - right knee", 0, 120, 0.1, 0);
+	createModelerControl(BOY_LEFT_FOOT_PITCH_ANGLE, "Boy - left ankle", 0, 105, 0.1, 90);
+	createModelerControl(BOY_RIGHT_FOOT_PITCH_ANGLE, "Boy - right ankle", 0, 105, 0.1, 90);
+
+	createModelerControl(GIRL_HEAD_PITCH, "Girl - head pitch", -45, 90, 0.1, 0);
+	createModelerControl(GIRL_HEAD_TILT, "Girl - head tilt", -45, 45, 0.1, 0);
+	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_FLAP, "Girl - left shoudler (flap)", -90, 90, 0.1, 60);
+	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_FLAP, "Girl - right shoudler (flap)", -90, 90, 0.1, 60);
+	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_RAISE, "Girl - left shoudler (raise)", -180, 180, 0.1, 0);
+	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_RAISE, "Girl - right shoudler (raise)", -180, 180, 0.1, 0);
+	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_AXIAL, "Girl - left shoudler (axial)", -90, 90, 0.1, 0);
+	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL, "Girl - right shoudler (axial)", -90, 90, 0.1, 0);
+	createModelerControl(GIRL_ELBOW_LEFT_ANGLE, "Girl - left elbow", 0, 150, 0.1, 30);
+	createModelerControl(GIRL_ELBOW_RIGHT_ANGLE, "Girl - right elbow", 0, 150, 0.1, 30);
+	createModelerControl(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE, "Girl - left leg (pitch)", -45, 90, 0.1, 0);
+	createModelerControl(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE, "Girl - right leg (pitch)", -45, 90, 0.1, 0);
+	createModelerControl(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE, "Girl - left leg (roll)", -15, 75, 0.1, 0);
+	createModelerControl(GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE, "Girl - right leg (roll)", -15, 75, 0.1, 0);
+	createModelerControl(GIRL_LEFT_UPPER_LEG_YAW_ANGLE, "Girl - left leg (yaw)", -30, 60, 0.1, 0);
+	createModelerControl(GIRL_RIGHT_UPPER_LEG_YAW_ANGLE, "Girl - right leg (yaw)", -30, 60, 0.1, 0);
+	createModelerControl(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE, "Girl - left knee", 0, 120, 0.1, 0);
+	createModelerControl(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE, "Girl - right knee", 0, 120, 0.1, 0);
+	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
+	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
