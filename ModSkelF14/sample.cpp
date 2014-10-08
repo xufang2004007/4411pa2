@@ -65,7 +65,38 @@ double SampleModel::VAL(SampleModelControls index) {
 	if (isAnimating() && index > CUSTOM_ANIMATION) {
 		double progress = animateCounter / (double) ANIMATION_FRAMES_COUNT;
 		if (VAL(NSFW)) {
-
+			switch (index) {
+			case BOY_GIRL_BIND:
+				return 1;
+			case BOY_GIRL_SIDE:
+				return 1;
+			case BOY_GIRL_ANGLE:
+				return 170;
+			case BOY_HEAD_PITCH:
+				return animationEase(progress * 2) * 10 + 5;
+			case BOY_SHOULDER_ANGLE:
+				return 45 - animationEase(progress * 3) * 10;
+			case BOY_ELBOW_ANGLE:
+				return 130 + animationEase(progress * 3) * 5;
+			case BOY_LEFT_UPPER_LEG_PITCH_ANGLE:
+			case BOY_RIGHT_UPPER_LEG_PITCH_ANGLE:
+			case BOY_LEFT_LOWER_LEG_PITCH_ANGLE:
+			case BOY_RIGHT_LOWER_LEG_PITCH_ANGLE:
+				return 75;
+			case BOY_LEFT_UPPER_LEG_ROLL_ANGLE:
+			case BOY_RIGHT_UPPER_LEG_ROLL_ANGLE:
+				return 30;
+			case BOY_RIGHT_FOOT_PITCH_ANGLE:
+				return animationEase(progress * 2) * 10 + 100;
+			case GIRL_HEAD_PITCH:
+				return animationEase(progress * 3) * 22.5 + 2.5;
+			case GIRL_LEFT_UPPER_LEG_PITCH_ANGLE:
+			case GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE:
+				return 70 - 10 * animationEase(progress * 3);
+			case GIRL_LEFT_UPPER_LEG_ROLL_ANGLE:
+			case GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE:
+				return 40;
+			}
 		} else {
 			switch (index) {
 			case BOY_GIRL_BIND:
@@ -500,7 +531,7 @@ int main()
 	// stepsize, defaultvalue)
 	ModelerControl controls[NUMCONTROLS];
 
-	createModelerControl(XPOS, "Position", -5, 5, 0.1, 2.5);
+	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 2.5);
 	createModelerControl(YPOS, "Y Position", -5, 5, 0.1, 0);
 	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
 	createModelerControl(LVL_DETAIL, "Level of detail", 0, 2, 1, 2);
