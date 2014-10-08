@@ -1,15 +1,13 @@
-// The sample model.  You should build a file
-// very similar to this for when you make your model.
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include "modelerview.h"
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include <FL/gl.h>
-#include <gl/GLU.h>
 #include "modelerglobals.h"
-#include "glhelper.h"
 #include "camera.h"
+
+// those three special sources files are treated as headers
+#include "glhelper.cpp"
+#include "texture.cpp"
 #include "handdrawer.cpp"
 
 #define createModelerControl(index, name, minimum, maximum, stepsize, value) {\
@@ -18,213 +16,6 @@
 }
 
 double defaultValues[NUMCONTROLS];
-
-GLuint texture[2];
-
-struct Image {
-
-	unsigned long sizeX;
-
-	unsigned long sizeY;
-
-	char *data;
-
-};
-
-typedef struct Image Image;
-
-
-#define checkImageWidth 64
-
-#define checkImageHeight 64
-
-
-GLubyte checkImage[checkImageWidth][checkImageHeight][3];
-
-void makeCheckImage(void){
-
-	int i, j, c;
-
-	for (i = 0; i < checkImageWidth; i++) {
-
-		for (j = 0; j < checkImageHeight; j++) {
-
-			c = ((((i & 0x8) == 0) ^ ((j & 0x8) == 0))) * 255;
-
-			checkImage[i][j][0] = (GLubyte)c;
-
-			checkImage[i][j][1] = (GLubyte)c;
-
-			checkImage[i][j][2] = (GLubyte)c;
-
-		}
-
-	}
-
-}
-
-
-
-int ImageLoad(char *filename, Image *image) {
-
-	FILE *file;
-
-	unsigned long size; // size of the image in bytes.
-
-	unsigned long i; // standard counter.
-
-	unsigned short int planes; // number of planes in image (must be 1)
-
-	unsigned short int bpp; // number of bits per pixel (must be 24)
-
-	char temp; // temporary color storage for bgr-rgb conversion.
-
-	// make sure the file is there.
-
-	if ((file = fopen(filename, "rb")) == NULL){
-
-		printf("File Not Found : %s\n", filename);
-
-		return 0;
-
-	}
-
-	// seek through the bmp header, up to the width/height:
-
-	fseek(file, 18, SEEK_CUR);
-
-	// read the width
-
-	if ((i = fread(&image->sizeX, 4, 1, file)) != 1) {
-
-		printf("Error reading width from %s.\n", filename);
-
-		return 0;
-
-	}
-
-	//printf("Width of %s: %lu\n", filename, image->sizeX);
-
-	// read the height
-
-	if ((i = fread(&image->sizeY, 4, 1, file)) != 1) {
-
-		printf("Error reading height from %s.\n", filename);
-
-		return 0;
-
-	}
-
-	//printf("Height of %s: %lu\n", filename, image->sizeY);
-
-	// calculate the size (assuming 24 bits or 3 bytes per pixel).
-
-	size = image->sizeX * image->sizeY * 3;
-
-	// read the planes
-
-	if ((fread(&planes, 2, 1, file)) != 1) {
-
-		printf("Error reading planes from %s.\n", filename);
-
-		return 0;
-
-	}
-
-	if (planes != 1) {
-
-		printf("Planes from %s is not 1: %u\n", filename, planes);
-
-		return 0;
-
-	}
-
-	// read the bitsperpixel
-
-	if ((i = fread(&bpp, 2, 1, file)) != 1) {
-
-		printf("Error reading bpp from %s.\n", filename);
-
-		return 0;
-
-	}
-
-	if (bpp != 24) {
-
-		printf("Bpp from %s is not 24: %u\n", filename, bpp);
-
-		return 0;
-
-	}
-
-	// seek past the rest of the bitmap header.
-
-	fseek(file, 24, SEEK_CUR);
-
-	// read the data.
-
-	image->data = (char *)malloc(size);
-
-	if (image->data == NULL) {
-
-		printf("Error allocating memory for color-corrected image data");
-
-		return 0;
-
-	}
-
-	if ((i = fread(image->data, size, 1, file)) != 1) {
-
-		printf("Error reading image data from %s.\n", filename);
-
-		return 0;
-
-	}
-
-	for (i = 0; i<size; i += 3) { // reverse all of the colors. (bgr -> rgb)
-
-		temp = image->data[i];
-
-		image->data[i] = image->data[i + 2];
-
-		image->data[i + 2] = temp;
-
-	}
-
-	// we're done.
-
-	return 1;
-
-}
-
-
-Image * loadTexture(){
-
-	Image *image1;
-
-	// allocate space for texture
-
-	image1 = (Image *)malloc(sizeof(Image));
-
-	if (image1 == NULL) {
-
-		printf("Error allocating space for image");
-
-		exit(0);
-
-	}
-
-	if (!ImageLoad("face.bmp", image1)) {
-
-		exit(1);
-
-	}
-
-	return image1;
-
-}
-
-
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView
@@ -255,15 +46,6 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 		drawBox(x, y, z);
 	});
 }
-
-/*
-double animationLinear(double progress) {
-	double p = fmod(progress, 1);
-	if (p < 0.25) { return p * 4; }
-	if (p < 0.75) { return 2 - p * 4; }
-	return p * 4 - 4;
-}
-*/
 
 double animationEase(double progress) {
 	double p = fmod(progress, 1);
@@ -305,6 +87,8 @@ double SampleModel::VAL(SampleModelControls index) {
 			case GIRL_LEFT_UPPER_LEG_ROLL_ANGLE:
 			case GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE:
 				return 40;
+			case THOUSERS:
+				return 0;
 			}
 		} else {
 			switch (index) {
@@ -386,64 +170,11 @@ void SampleModel::ModelerViewDraw()
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightDiffuse1);
 
-	//Add ambient light
-	GLfloat ambientColor[] = { 0.8f, 0.8f, 0.8f, 1.0f }; //Color(0.2, 0.2, 0.2)
+	// Add ambient light
+	GLfloat ambientColor[] = { 0.8f, 0.8f, 0.8f, 1.0f };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 
-	//================================
-	glEnable(GL_DEPTH_TEST);
-
-	glDepthFunc(GL_LESS);
-
-	Image *image1 = loadTexture();
-
-	if (image1 == NULL){
-
-		printf("Image was not returned from loadTexture\n");
-
-		exit(0);
-
-	}
-
-	makeCheckImage();
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	// Create Texture
-
-	glGenTextures(2, texture);
-
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //scale linearly when image bigger than texture
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); //scale linearly when image smalled than texture
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0,
-
-		GL_RGB, GL_UNSIGNED_BYTE, image1->data);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, checkImageWidth,
-
-		checkImageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, &checkImage[0][0][0]);
-
-	//glEnable(GL_TEXTURE_2D);
-
-	glShadeModel(GL_FLAT);
+	Texture::init();
 }
 
 bool SampleModel::isAnimating()
@@ -472,7 +203,7 @@ void SampleModel::draw()
 	double BSA = 180 - VAL(BOY_SHOULDER_ANGLE);
 	double BEA = -VAL(BOY_ELBOW_ANGLE);
 
-	GLCOLOR(COLOR_BOY_BODY, {
+	GLDRAWWITH(COLOR_BOY_BODY, {
 		GLMATRIX({
 			glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
@@ -487,24 +218,24 @@ void SampleModel::draw()
 					glRotated(VAL(BOY_HEAD_PITCH), 1, 0, 0);
 					glRotated(-VAL(BOY_HEAD_TILT), 0, 1, 0);
 					glTranslated(-BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, 0);
-					//Texture Mapping Begin
-					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, texture[0]);
-					glBegin(GL_QUADS);
 
-					glTexCoord2f(0.0, 0.0);
-					glVertex3f(0, 0, 0.0);
-					glTexCoord2f(1.0, 0.0);
-					glVertex3f(BOY_HEAD_X, 0, 0.0);
-					glTexCoord2f(1.0, 1.0);
-					glVertex3f(BOY_HEAD_X, 0, BOY_HEAD_Z);
-					glTexCoord2f(0.0, 1.0);
-					glVertex3f(0, 0, BOY_HEAD_Z);
-					glEnd();
-					glDisable(GL_TEXTURE_2D);
+					if (VAL(FACE_TEXTURE)) {
+						GLDRAWWITH(Texture::texture[0], {
+							glBegin(GL_QUADS);
+
+							glTexCoord2f(0.0, 0.0);
+							glVertex3f(0, 0, 0.0);
+							glTexCoord2f(1.0, 0.0);
+							glVertex3f(BOY_HEAD_X, 0, 0.0);
+							glTexCoord2f(1.0, 1.0);
+							glVertex3f(BOY_HEAD_X, 0, BOY_HEAD_Z);
+							glTexCoord2f(0.0, 1.0);
+							glVertex3f(0, 0, BOY_HEAD_Z);
+							glEnd();
+						});
+					}
 					
 					drawBox(BOY_HEAD_X, BOY_HEAD_Y, BOY_HEAD_Z);
-					
 				});
 
 				// arms / hands
@@ -633,7 +364,7 @@ void SampleModel::draw()
 }
 
 void SampleModel::drawGirl() {
-	GLCOLOR(COLOR_GIRL_BODY, {
+	GLDRAWWITH(COLOR_GIRL_BODY, {
 		// body
 		GLMATRIX({
 			glScaled(1, 0.5, 1);
@@ -651,10 +382,9 @@ void SampleModel::drawGirl() {
 				glScaled(1, 1, GIRL_HEAD_LENGTH);	
 				drawSphere(GIRL_HEAD_RADIUS);
 
-
 				// eyes and mouth
 				if (VAL(LVL_DETAIL) >= 2) {
-					GLCOLOR(COLOR_EYES, {
+					GLDRAWWITH(COLOR_EYES, {
 						GLMATRIX({
 							glTranslated(GIRL_EYES_COORD);
 							drawSphere(GIRL_EYES_RADIUS);
@@ -664,7 +394,7 @@ void SampleModel::drawGirl() {
 							drawSphere(GIRL_EYES_RADIUS);
 						});
 					});
-					GLCOLOR(COLOR_MOUTH, {
+					GLDRAWWITH(COLOR_MOUTH, {
 						GLMATRIX({
 							glTranslated(GIRL_MOUTH_COORD);
 							glScaled(1, 0.85, 0.35);
@@ -745,20 +475,21 @@ void SampleModel::drawGirl() {
 			glRotated(VAL(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE), 1, 0, 0);
 			glRotated(VAL(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE), 0, 1, 0);
 			glRotated(VAL(GIRL_LEFT_UPPER_LEG_YAW_ANGLE), 0, 0, 1);
-			//Texture Mapping begin
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, texture[1]);
+
 			// upper leg
 			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
-			drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+
+			GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 1, {
+				drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+			});
 
 			// lower leg
 			GLMATRIX({
 				glRotated(180 - VAL(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-				//Texture Mapping end
-				glDisable(GL_TEXTURE_2D);
+				GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 2, {
+					drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
+				});
 
 				// foot
 				if (VAL(LVL_DETAIL) >= 1) {
@@ -781,20 +512,21 @@ void SampleModel::drawGirl() {
 			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE), 1, 0, 0);
 			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_ROLL_ANGLE), 0, -1, 0);
 			glRotated(VAL(GIRL_RIGHT_UPPER_LEG_YAW_ANGLE), 0, 0, -1);
-			//Texture Mapping begin
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, texture[1]);
-			// upper leg
+
 			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
-			drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+
+			GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 1, {
+				drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
+			});
 
 			// lower leg
 			GLMATRIX({
 				glRotated(180 - VAL(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
-				//Texture Mapping end
-				glDisable(GL_TEXTURE_2D);
+				GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 2, {
+					drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
+				});
+
 				// foot
 				if (VAL(LVL_DETAIL) >= 1) {
 					GLMATRIX({
@@ -832,6 +564,8 @@ int main()
 	createModelerControl(LIGHT_DIR_Y, "Light Direction Y", -100, 100, 0.1f, -10);
 	createModelerControl(LIGHT_DIR_Z, "Light Direction Z", -100, 100, 0.1f, 4);
 
+	createModelerControl(FACE_TEXTURE, "Texture on boy's face", 0, 1, 1, 0);
+
 	createModelerControl(CUSTOM_ANIMATION, "Customizable animation", 0, 1, 1, 0);
 
 	createModelerControl(BOY_GIRL_BIND, "Bind characters", 0, 1, 1, 0);
@@ -864,6 +598,7 @@ int main()
 	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL, "Girl - right shoudler (axial)", -90, 90, 0.1, 0);
 	createModelerControl(GIRL_ELBOW_LEFT_ANGLE, "Girl - left elbow", 0, 150, 0.1, 30);
 	createModelerControl(GIRL_ELBOW_RIGHT_ANGLE, "Girl - right elbow", 0, 150, 0.1, 30);
+	createModelerControl(THOUSERS, "Girl - thousers", 0, 2, 1, 1);
 	createModelerControl(GIRL_LEFT_UPPER_LEG_PITCH_ANGLE, "Girl - left leg (pitch)", -45, 90, 0.1, 0);
 	createModelerControl(GIRL_RIGHT_UPPER_LEG_PITCH_ANGLE, "Girl - right leg (pitch)", -45, 90, 0.1, 0);
 	createModelerControl(GIRL_LEFT_UPPER_LEG_ROLL_ANGLE, "Girl - left leg (roll)", -15, 75, 0.1, 0);
@@ -875,7 +610,6 @@ int main()
 	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
-	srand(25486745);
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
 }

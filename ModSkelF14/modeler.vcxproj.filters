@@ -65,10 +65,13 @@
     <ClInclude Include="vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glhelper.h">
+    <ClInclude Include="handdrawer.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="handdrawer.cpp">
+    <ClInclude Include="texture.cpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glhelper.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

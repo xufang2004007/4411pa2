@@ -177,11 +177,12 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClInclude Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="glhelper.h" />
+    <ClInclude Include="glhelper.cpp" />
     <ClInclude Include="handdrawer.cpp" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="modelerapp.h" />
