@@ -199,7 +199,7 @@ void SampleModel::draw()
 	ModelerViewDraw();
 
 	// draw the sample model
-	setAmbientColor(.1f, .1f, .1f);
+	setAmbientColor(.2f, .2f, .2f);
 
 	double BSA = 180 - VAL(BOY_SHOULDER_ANGLE);
 	double BEA = -VAL(BOY_ELBOW_ANGLE);
@@ -221,7 +221,7 @@ void SampleModel::draw()
 					glTranslated(-BOY_HEAD_X / 2, -BOY_HEAD_Y / 2, 0);
 
 					if (VAL(FACE_TEXTURE)) {
-						GLDRAWWITH(Texture::texture[0], {
+						GLDRAWWITH(Texture::texture[Texture::FACE], {
 							glBegin(GL_QUADS);
 
 							glTexCoord2f(0.0, 0.0);
@@ -362,16 +362,6 @@ void SampleModel::draw()
 			drawGirl();
 		});
 	}
-
-	double n[] = { -1, -sqrt(2), 0, sqrt(2), 1, sqrt(2), 0, -sqrt(2), -1 };
-	double a[] = { 0, sqrt(2), 1, sqrt(2), 0, -sqrt(2), -1, -sqrt(2), 0 };
-	for (int i = 0; i < 9; i++) {
-		n[i] += 2;
-		a[i] += 2;
-	}
-	GLDRAWWITH(COLOR_MOUTH, {
-		DrawRevolve::drawRevolve(9, n, a);
-	});
 }
 
 void SampleModel::drawGirl() {
@@ -490,7 +480,7 @@ void SampleModel::drawGirl() {
 			// upper leg
 			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
 
-			GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 1, {
+			GLMAYBEDRAWWITH(Texture::texture[Texture::CHECK], VAL(THOUSERS) >= 1, {
 				drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 			});
 
@@ -498,7 +488,7 @@ void SampleModel::drawGirl() {
 			GLMATRIX({
 				glRotated(180 - VAL(GIRL_LEFT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 2, {
+				GLMAYBEDRAWWITH(Texture::texture[Texture::CHECK], VAL(THOUSERS) >= 2, {
 					drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 				});
 
@@ -526,7 +516,7 @@ void SampleModel::drawGirl() {
 
 			glTranslated(0, 0, -GIRL_UPPER_LEG_LENGTH);
 
-			GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 1, {
+			GLMAYBEDRAWWITH(Texture::texture[Texture::CHECK], VAL(THOUSERS) >= 1, {
 				drawCylinder(GIRL_UPPER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_WAIST_RADIUS / 2);
 			});
 
@@ -534,7 +524,7 @@ void SampleModel::drawGirl() {
 			GLMATRIX({
 				glRotated(180 - VAL(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE), 1, 0, 0);
 
-				GLMAYBEDRAWWITH(Texture::texture[1], VAL(THOUSERS) >= 2, {
+				GLMAYBEDRAWWITH(Texture::texture[Texture::CHECK], VAL(THOUSERS) >= 2, {
 					drawCylinder(GIRL_LOWER_LEG_LENGTH, GIRL_LEG_RADIUS, GIRL_LEG_RADIUS);
 				});
 
@@ -571,9 +561,9 @@ int main()
 	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
 	createModelerControl(LVL_DETAIL, "Level of detail", 0, 2, 1, 2);
 	createModelerControl(NSFW, "NSFW", 0, 1, 1, 0);
-	createModelerControl(LIGHT_DIR_X, "Light Direction X", -100, 100, 0.1f, 4);
-	createModelerControl(LIGHT_DIR_Y, "Light Direction Y", -100, 100, 0.1f, -10);
-	createModelerControl(LIGHT_DIR_Z, "Light Direction Z", -100, 100, 0.1f, 4);
+	createModelerControl(LIGHT_DIR_X, "Light Direction X", -100, 100, 0.1, 4);
+	createModelerControl(LIGHT_DIR_Y, "Light Direction Y", -100, 100, 0.1, -10);
+	createModelerControl(LIGHT_DIR_Z, "Light Direction Z", -100, 100, 0.1, 4);
 
 	createModelerControl(FACE_TEXTURE, "Texture on boy's face", 0, 1, 1, 0);
 
@@ -620,6 +610,12 @@ int main()
 	createModelerControl(GIRL_RIGHT_LOWER_LEG_PITCH_ANGLE, "Girl - right knee", 0, 120, 0.1, 0);
 	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
+
+	createModelerControl(DONUT_SHOW, "Donut - visible", 0, 1, 1, 0);
+	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.25, 2, 0.05, 0.5);
+	createModelerControl(DONUT_R_RATIO, "Donut - r / R", 0.1, 1, 0.02, 0.5);
+	createModelerControl(DONUT_X_REPEAT, "Donut - texture repeat (X)", 1, 5, 1, 1);
+	createModelerControl(DONUT_Y_REPEAT, "Donut - texture repeat (Y)", 1, 5, 1, 1);
 
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();
