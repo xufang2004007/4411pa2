@@ -17,10 +17,10 @@ private:
 
 	void makeTKnobVector(int degree, float* &output);
 	void makeSKnobVector(float* &output);
-	void drawRevolve(int length, double normal[], double axial[]);
+	void drawRevolve(int length, double normal[], double axial[], int repeatX, int repeatY);
 	void drawTorus(double tr, double cr, int repeatX, int repeatY);
 
 public:
 	static void torus(double R, double r, int repeatX = 1, int repeatY = 1);
-	static void revolve(int length, double x[], double z[]);
+	static void revolve(int length, double x[], double z[], int repeatX = 1, int repeatY = 1);
 };

@@ -10,6 +10,7 @@ namespace Texture {
 		FACE,
 		CHECK,
 		DONUT,
+		STRAW,
 		TEXTURE_COUNT
 	};
 
@@ -61,6 +62,7 @@ namespace Texture {
 		initWithBMP(FACE, "face.bmp");
 		initWithCheck(CHECK);
 		initWithBMP(DONUT, "donut.bmp");
+		initWithBMP(STRAW, "straw.bmp");
 	}
 
 };

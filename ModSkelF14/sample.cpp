@@ -4,12 +4,12 @@
 #include <FL/gl.h>
 #include "modelerglobals.h"
 #include "camera.h"
+#include "drawrevolve.h"
 
 // those three special sources files are treated as headers
 #include "glhelper.cpp"
 #include "texture.cpp"
 #include "handdrawer.cpp"
-#include "drawrevolve.cpp"
 
 #define createModelerControl(index, name, minimum, maximum, stepsize, value) {\
 	defaultValues[index] = value;\
@@ -27,6 +27,7 @@ public:
 
 	void draw();
 	void drawGirl();
+	void drawHat();
 private:
 	void ModelerViewDraw();
 	bool isAnimating();
@@ -172,7 +173,7 @@ void SampleModel::ModelerViewDraw()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightDiffuse1);
 
 	// Add ambient light
-	GLfloat ambientColor[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	GLfloat ambientColor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
 
 	Texture::init();
@@ -182,7 +183,6 @@ bool SampleModel::isAnimating()
 {
 	return ModelerApplication::Instance()->m_animating;
 }
-
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
@@ -199,7 +199,7 @@ void SampleModel::draw()
 	ModelerViewDraw();
 
 	// draw the sample model
-	setAmbientColor(.2f, .2f, .2f);
+	setAmbientColor(.15f, .15f, .15f);
 
 	double BSA = 180 - VAL(BOY_SHOULDER_ANGLE);
 	double BEA = -VAL(BOY_ELBOW_ANGLE);
@@ -364,6 +364,14 @@ void SampleModel::draw()
 	}
 }
 
+void SampleModel::drawHat() {
+	double height = VAL(HAT_HEIGHT);
+	double axial[] = { 0, 0.25, 0.75, (height * 3 + 0.75) / 4, height, height };
+	double normal[] = { VAL(HAT_RADIUS), 1, 1, 1, 0.5, 0 };
+	
+	GLDRAWWITH(Texture::texture[Texture::STRAW], { DrawRevolve::revolve(6, normal, axial); });
+}
+
 void SampleModel::drawGirl() {
 	GLDRAWWITH(COLOR_GIRL_BODY, {
 		// body
@@ -379,31 +387,42 @@ void SampleModel::drawGirl() {
 			GLMATRIX({
 				glRotated(- VAL(GIRL_HEAD_PITCH), 1, 0, 0);
 				glRotated(VAL(GIRL_HEAD_TILT), 0, 1, 0);
-				glTranslated(0, 0, GIRL_HEAD_RADIUS * GIRL_HEAD_LENGTH);
-				glScaled(1, 1, GIRL_HEAD_LENGTH);	
-				drawSphere(GIRL_HEAD_RADIUS);
 
-				// eyes and mouth
-				if (VAL(LVL_DETAIL) >= 2) {
-					GLDRAWWITH(COLOR_EYES, {
-						GLMATRIX({
-							glTranslated(GIRL_EYES_COORD);
-							drawSphere(GIRL_EYES_RADIUS);
+				GLMATRIX({
+					glTranslated(0, 0, GIRL_HEAD_RADIUS * GIRL_HEAD_LENGTH);
+					glScaled(1, 1, GIRL_HEAD_LENGTH);
+					drawSphere(GIRL_HEAD_RADIUS);
+
+					// eyes and mouth
+					if (VAL(LVL_DETAIL) >= 2) {
+						GLDRAWWITH(COLOR_EYES, {
+							GLMATRIX({
+								glTranslated(GIRL_EYES_COORD);
+								drawSphere(GIRL_EYES_RADIUS);
+							});
+							GLMATRIX({
+								glTranslated(-GIRL_EYES_COORD);
+								drawSphere(GIRL_EYES_RADIUS);
+							});
 						});
-						GLMATRIX({
-							glTranslated(-GIRL_EYES_COORD);
-							drawSphere(GIRL_EYES_RADIUS);
+						GLDRAWWITH(COLOR_MOUTH, {
+							GLMATRIX({
+								glTranslated(GIRL_MOUTH_COORD);
+								glScaled(1, 0.85, 0.35);
+								drawSphere(0.4);
+							});
 						});
-					});
-					GLDRAWWITH(COLOR_MOUTH, {
-						GLMATRIX({
-							glTranslated(GIRL_MOUTH_COORD);
-							glScaled(1, 0.85, 0.35);
-							drawSphere(0.4);
-						});
+					}
+				});
+
+				if (VAL(HAT_SHOW)) {
+					double scale = 0.75 * GIRL_HEAD_RADIUS;
+					GLMATRIX({
+						glTranslated(0, 0, GIRL_HEAD_RADIUS * GIRL_HEAD_LENGTH * 1.35);
+						glScaled(scale, scale, scale);
+						drawHat();
 					});
 				}
-
 			});
 
 			// breast
@@ -434,7 +453,7 @@ void SampleModel::drawGirl() {
 							glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
 							glRotated(90, 0, 1, 0);
 							glScaled(1.25, 1, 1);
-							drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+							drawCylinder(GIRL_PALM_THICKNESS, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 						});
 					}
 
@@ -455,14 +474,28 @@ void SampleModel::drawGirl() {
 					glRotated(VAL(GIRL_ELBOW_RIGHT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
-					if (VAL(LVL_DETAIL) >= 1) {
-						GLMATRIX({
-							glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
-							glRotated(90, 0, -1, 0);
-							glScaled(1.25, 1, 1);
-							drawCylinder(0.125, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
-						});
-					}
+					GLMATRIX({
+						glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
+						glRotated(90, 0, -1, 0);
+
+						if (VAL(LVL_DETAIL) >= 1) {
+							GLMATRIX({
+								glScaled(1.25, 1, 1);
+								drawCylinder(GIRL_PALM_THICKNESS, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+							});
+						}
+
+						if (VAL(DONUT_SHOW)) {
+							double donut_r = VAL(DONUT_MAJOR_R);
+							double donut_xsec_r = donut_r * VAL(DONUT_R_RATIO);
+							GLMATRIX({
+								glTranslated(donut_r + donut_xsec_r, 0, -donut_xsec_r);
+								GLDRAWWITH(Texture::texture[Texture::DONUT], {
+									DrawRevolve::torus(donut_r, donut_xsec_r, VAL(DONUT_X_REPEAT), VAL(DONUT_Y_REPEAT));
+								});
+							});
+						}
+					});
 
 				});
 
@@ -556,7 +589,7 @@ int main()
 	createModelerControl(DBG1, "Dbg 1", -1, 1, 0.01, 1);
 	createModelerControl(DBG2, "Dbg 2", -1, 1, 0.01, 0);
 
-	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 5); // FIXME temporary change for debugging. change it back to 2.5 pls
+	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 2.5);
 	createModelerControl(YPOS, "Y Position", -5, 5, 0.1, 0);
 	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
 	createModelerControl(LVL_DETAIL, "Level of detail", 0, 2, 1, 2);
@@ -612,10 +645,14 @@ int main()
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
 	createModelerControl(DONUT_SHOW, "Donut - visible", 0, 1, 1, 0);
-	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.25, 2, 0.05, 0.5);
-	createModelerControl(DONUT_R_RATIO, "Donut - r / R", 0.1, 1, 0.02, 0.5);
-	createModelerControl(DONUT_X_REPEAT, "Donut - texture repeat (X)", 1, 5, 1, 1);
-	createModelerControl(DONUT_Y_REPEAT, "Donut - texture repeat (Y)", 1, 5, 1, 1);
+	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.05, 2, 0.05, 0.25);
+	createModelerControl(DONUT_R_RATIO, "Donut - r / R", 0.1, 1, 0.05, 0.5);
+	createModelerControl(DONUT_X_REPEAT, "Donut - texture repeat (vertical)", 1, 5, 1, 1);
+	createModelerControl(DONUT_Y_REPEAT, "Donut - texture repeat (horizontal)", 1, 5, 1, 1);
+
+	createModelerControl(HAT_SHOW, "Hat - visible", 0, 1, 1, 1);
+	createModelerControl(HAT_RADIUS, "Hat - disc radius", 1.75, 5, 0.05, 2.5);
+	createModelerControl(HAT_HEIGHT, "Hat - height", 1.25, 3.5, 0.05, 2.25);
 
 	ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
 	return ModelerApplication::Instance()->Run();

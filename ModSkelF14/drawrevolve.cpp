@@ -59,20 +59,24 @@ DrawRevolve::DrawRevolve(ModelerDrawState* mds) : mds(mds) {
 }
 
 // revolve around z-axis only. want others? use glTranslate and glRotate by yourself! I DON'T FUCKING DO THAT FOR U!!!
-void DrawRevolve::drawRevolve(int length, double normal[], double axial[]) {
+void DrawRevolve::drawRevolve(int length, double normal[], double axial[], int repeatX, int repeatY) {
 	gluBeginSurface(nurb);
 	float* sknots;
 	makeSKnobVector(sknots);
 	float* tknots;
 	makeTKnobVector(length, tknots);
 	float* cps = new float[4 * slength * length];
+	float* texture = new float[2 * slength * length];
 	double w = sin(M_PI / 2 - M_PI / sides);
 	for (int t = 0; t < length; t++) {
 		double n = normal[t];
 		double a = axial[t];
+		float tt = fmod(t * repeatX / (float)length, 1);
 		double r = n / w;
 		for (int s = 0; s < slength; s++) {
 			double angle = s * M_PI / sides;
+			T(t, s, 0) = tt;
+			T(t, s, 1) = fmod(s * repeatY / (float)slength, 1);
 			P(t, s, 2) = a;
 			if (s & 1) {
 				P(t, s, 3) = w;
@@ -84,6 +88,7 @@ void DrawRevolve::drawRevolve(int length, double normal[], double axial[]) {
 		}
 	}
 	gluNurbsSurface(nurb, slength + 3, sknots, length + 4, tknots, 4, 4 * slength, cps, 3, 4, GL_MAP2_VERTEX_4);
+	gluNurbsSurface(nurb, slength + 3, sknots, length + 4, tknots, 2, 2 * slength, texture, 3, 4, GL_MAP2_TEXTURE_COORD_2);
 	gluEndSurface(nurb);
 }
 
@@ -135,10 +140,10 @@ void DrawRevolve::torus(double R, double r, int repeatX, int repeatY) {
 	}
 }
 
-void DrawRevolve::revolve(int length, double x[], double z[]) {
+void DrawRevolve::revolve(int length, double x[], double z[], int repeatX, int repeatY) {
 	DrawRevolve* instance = factory();
 	if (instance) {
-		instance->drawRevolve(length, x, z);
+		instance->drawRevolve(length, x, z, repeatX, repeatY);
 	}
 }
 

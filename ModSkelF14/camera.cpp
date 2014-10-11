@@ -183,55 +183,37 @@ void Camera::applyViewingTransform() {
 
 void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 {
-	double m[16];
-	double x[3], y[3], z[3];
-	double mag;
+	Vec3f x, y, z;
+	float glm[16];
+
+	#define CROSS_PRODUCT(dest, s1, s2) {\
+		dest[0] = s1[1] * s2[2] - s1[2] * s2[1];\
+		dest[1] = -s1[0] * s2[2] + s1[2] * s2[0];\
+		dest[2] = s1[0] * s2[1] - s1[1] * s2[0];\
+	}\
 
 	/* Make rotation matrix */
 	/* Z vector */
-	z[0] = eye[0] - at[0];
-	z[1] = eye[1] - at[1];
-	z[2] = eye[2] - at[2];
-	mag = sqrt(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
-	if (mag) {
-		z[0] /= mag;
-		z[1] /= mag;
-		z[2] /= mag;
-	}
+	z = eye - at;
+	z.normalize();
 	/* Y vector */
-	y[0] = up[0];
-	y[1] = up[1];
-	y[2] = up[2];
+	y = up;
 	/* X vector = Y cross Z */
-	x[0] = y[1] * z[2] - y[2] * z[1];
-	x[1] = -y[0] * z[2] + y[2] * z[0];
-	x[2] = y[0] * z[1] - y[1] * z[0];
+	CROSS_PRODUCT(x, y, z);
 	/* Recompute Y = Z cross X */
-	y[0] = z[1] * x[2] - z[2] * x[1];
-	y[1] = -z[0] * x[2] + z[2] * x[0];
-	y[2] = z[0] * x[1] - z[1] * x[0];
+	CROSS_PRODUCT(y, z, x);
 	/* cross product gives area of parallelogram, which is < 1.0 for
 	* non-perpendicular unit-length vectors; so normalize x, y here
 	*/
-	mag = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
-	if (mag) {
-		x[0] /= mag;
-		x[1] /= mag;
-		x[2] /= mag;
-	}
-	mag = sqrt(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
-	if (mag) {
-		y[0] /= mag;
-		y[1] /= mag;
-		y[2] /= mag;
-	}
-	#define M(row,col)  m[col*4+row] 
-		M(0, 0) = x[0];  M(0, 1) = x[1];  M(0, 2) = x[2];  M(0, 3) = 0.0;
-		M(1, 0) = y[0];  M(1, 1) = y[1];  M(1, 2) = y[2];  M(1, 3) = 0.0;
-		M(2, 0) = z[0];  M(2, 1) = z[1];  M(2, 2) = z[2];  M(2, 3) = 0.0;
-		M(3, 0) = 0.0;   M(3, 1) = 0.0;   M(3, 2) = 0.0;   M(3, 3) = 1.0;
-	#undef M 
-	glMultMatrixd(m);
+	x.normalize();
+	y.normalize();
+	Mat4f m;
+	memcpy(m[0], x.getPointer(), sizeof(float) * 3);
+	memcpy(m[1], y.getPointer(), sizeof(float) * 3);
+	memcpy(m[2], z.getPointer(), sizeof(float) * 3);
+	m.getGLMatrix(glm);
+	glMultMatrixf(glm);
+
 	/* Translate Eye to Origin */
 	glTranslated(-eye[0], -eye[1], -eye[2]);
 }
