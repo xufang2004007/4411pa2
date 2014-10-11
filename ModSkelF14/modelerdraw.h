@@ -73,6 +73,8 @@ bool openRayFile(const char rayFileName[]);
 // Closes the current .ray file if one exists
 void closeRayFile();
 
+void _setupOpenGl();
+
 /////////////////////////////
 // Raytraceable Primitives //
 /////////////////////////////

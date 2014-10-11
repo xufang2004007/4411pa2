@@ -9,6 +9,7 @@
 #include "glhelper.cpp"
 #include "texture.cpp"
 #include "handdrawer.cpp"
+#include "drawrevolve.cpp"
 
 #define createModelerControl(index, name, minimum, maximum, stepsize, value) {\
 	defaultValues[index] = value;\
@@ -360,7 +361,17 @@ void SampleModel::draw()
 			glRotated(VAL(BOY_GIRL_SIDE) * 180, 0, 0, 1);
 			drawGirl();
 		});
-}
+	}
+
+	double n[] = { -1, -sqrt(2), 0, sqrt(2), 1, sqrt(2), 0, -sqrt(2), -1 };
+	double a[] = { 0, sqrt(2), 1, sqrt(2), 0, -sqrt(2), -1, -sqrt(2), 0 };
+	for (int i = 0; i < 9; i++) {
+		n[i] += 2;
+		a[i] += 2;
+	}
+	GLDRAWWITH(COLOR_MOUTH, {
+		DrawRevolve::drawRevolve(9, n, a);
+	});
 }
 
 void SampleModel::drawGirl() {
@@ -555,7 +566,7 @@ int main()
 	createModelerControl(DBG1, "Dbg 1", -1, 1, 0.01, 1);
 	createModelerControl(DBG2, "Dbg 2", -1, 1, 0.01, 0);
 
-	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 2.5);
+	createModelerControl(XPOS, "X Position", -5, 5, 0.1, 5); // FIXME temporary change for debugging. change it back to 2.5 pls
 	createModelerControl(YPOS, "Y Position", -5, 5, 0.1, 0);
 	createModelerControl(ZPOS, "Z Position", -5, 5, 0.1, 0);
 	createModelerControl(LVL_DETAIL, "Level of detail", 0, 2, 1, 2);

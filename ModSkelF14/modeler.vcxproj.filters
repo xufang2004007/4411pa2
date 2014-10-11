@@ -74,5 +74,8 @@
     <ClInclude Include="glhelper.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="drawrevolve.cpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
