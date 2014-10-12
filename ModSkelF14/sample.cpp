@@ -5,6 +5,9 @@
 #include "modelerglobals.h"
 #include "camera.h"
 #include "drawrevolve.h"
+#include "metaball.h"
+
+typedef MetaballIsNotMeatball Meta;
 
 // those three special sources files are treated as headers
 #include "glhelper.cpp"
@@ -373,7 +376,14 @@ void SampleModel::drawHat() {
 }
 
 void SampleModel::drawGirl() {
+	Meta* skin = NULL;
+	double MBS = VAL(METABALL_BALL_SPACING);
+
 	GLDRAWWITH(COLOR_GIRL_BODY, {
+		if (VAL(GIRL_METABALL_SKIN)) {
+			skin = new Meta(2);
+		}
+
 		// body
 		GLMATRIX({
 			glScaled(1, 0.5, 1);
@@ -443,10 +453,26 @@ void SampleModel::drawGirl() {
 				glRotated(180 + VAL(GIRL_SHOULDER_LEFT_ANGLE_AXIAL), 0, 0, 1);
 				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
+				if (skin) {
+					double step = ceil(GIRL_UPPER_ARM_LENGTH / MBS);
+					double stepSize = GIRL_UPPER_ARM_LENGTH / step;
+					for (int i = 0; i <= step; i++) {
+						skin->addBallRel(0, 0, i * stepSize, GIRL_UPPER_ARM_RADIUS * i + GIRL_LOWER_ARM_RADIUS * (step - i));
+					}
+				}
+
 				GLMATRIX({
 					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
 					glRotated(VAL(GIRL_ELBOW_LEFT_ANGLE), 1, 0, 0);
 					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+
+					if (skin) {
+						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS); // TODO: TODO: change to lower arm, then draw
+						double stepSize = GIRL_LOWER_ARM_LENGTH / step;
+						for (int i = 0; i <= step; i++) {
+							skin->addBallRel(0, 0, i * stepSize, GIRL_UPPER_ARM_RADIUS * i + GIRL_LOWER_ARM_RADIUS * (step - i));
+						}
+					}
 
 					if (VAL(LVL_DETAIL) >= 1) {
 						GLMATRIX({
@@ -576,6 +602,10 @@ void SampleModel::drawGirl() {
 
 		});
 	});
+
+	if (skin) {
+		delete skin;
+	}
 }
 
 int main()
@@ -644,13 +674,17 @@ int main()
 	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
+	createModelerControl(GIRL_METABALL_SKIN, "Metaball skinning for girl", 0, 1, 1, 1);
+	createModelerControl(METABALL_SURFACE_THRESHOLD, "Metaball - surfacing threshold", 0.5, 2.5, 0.05, 1);
+	createModelerControl(METABALL_BALL_SPACING, "Metaball - ball spacing", 0.5, 2.5, 0.05, 1);
+
 	createModelerControl(DONUT_SHOW, "Donut - visible", 0, 1, 1, 0);
 	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.05, 2, 0.05, 0.25);
 	createModelerControl(DONUT_R_RATIO, "Donut - r / R", 0.1, 1, 0.05, 0.5);
 	createModelerControl(DONUT_X_REPEAT, "Donut - texture repeat (vertical)", 1, 5, 1, 1);
 	createModelerControl(DONUT_Y_REPEAT, "Donut - texture repeat (horizontal)", 1, 5, 1, 1);
 
-	createModelerControl(HAT_SHOW, "Hat - visible", 0, 1, 1, 1);
+	createModelerControl(HAT_SHOW, "Hat - visible", 0, 1, 1, 0);
 	createModelerControl(HAT_RADIUS, "Hat - disc radius", 1.75, 5, 0.05, 2.5);
 	createModelerControl(HAT_HEIGHT, "Hat - height", 1.25, 3.5, 0.05, 2.25);
 

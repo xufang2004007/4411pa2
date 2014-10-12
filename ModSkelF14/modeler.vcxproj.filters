@@ -39,6 +39,12 @@
     <ClCompile Include="drawrevolve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cubegrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="metaball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h">
@@ -75,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="glhelper.cpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="metaball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cubegrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

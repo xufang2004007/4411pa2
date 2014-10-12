@@ -28,18 +28,6 @@ void DrawRevolve::makeSKnobVector(float* &output) {
 	output[sides * 2 + 3] = sides;
 }
 
-/*
-void printV(float* f, int l) {
-	std::stringstream ss;
-	ss << "[";
-	for (int i = 0; i < l; i++) {
-		ss << f[i] << " ";
-	}
-	ss << "]" << std::endl;
-	fl_alert(ss.str().c_str());
-}
-*/
-
 DrawRevolve::DrawRevolve(ModelerDrawState* mds) : mds(mds) {
 	switch (mds->m_quality)
 	{
