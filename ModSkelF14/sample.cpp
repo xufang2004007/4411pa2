@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "drawrevolve.h"
 #include "metaball.h"
+#include "time.h"
 
 typedef MetaballIsNotMeatball Meta;
 
@@ -26,9 +27,7 @@ class SampleModel : public ModelerView
 {
 public:
 	SampleModel(int x, int y, int w, int h, char *label)
-		: ModelerView(x, y, w, h, label) {
-		srand(345624574);
-	}
+		: ModelerView(x, y, w, h, label) {}
 
 	void draw();
 	void drawGirl();
@@ -38,6 +37,7 @@ private:
 	bool isAnimating();
 	double VAL(SampleModelControls index);
 	int animateCounter;
+	double random();
 };
 
 // We need to make a creator function, mostly because of
@@ -56,7 +56,11 @@ void drawBoxFromBottomCenter(double x, double y, double z) {
 
 double animationEase(double progress) {
 	double p = fmod(progress, 1);
-	return sin(progress * M_PI * 2);
+	return sin(progress * M_PI * 2); // FIXME: use cubic curve, a lot faster
+}
+
+double SampleModel::random() {
+	return rand() / (double) RAND_MAX;
 }
 
 double SampleModel::VAL(SampleModelControls index) {
@@ -375,20 +379,76 @@ void SampleModel::drawHat() {
 
 void SampleModel::drawGirl() {
 	Meta* skin = NULL;
-	double MBS = VAL(METABALL_BALL_SPACING);
+	double MBS = VAL(METABALL_ARM_BALL_SPACING);
+	double MBR = VAL(METABALL_ARM_BALL_RADIUS);
+	double GSL = VAL(GIRL_SHOULDER_LENGTH);
+	double MBSB = VAL(METABALL_BODY_BALL_SPACING);
+	double MBRB = VAL(METABALL_BODY_BALL_RADIUS);
 
 	GLDRAWWITH(COLOR_GIRL_BODY, {
-
 		if (VAL(GIRL_METABALL_SKIN)) {
 			skin = new Meta(VAL(NUM_MARCHING_CUBES));
 			skin->setBase();
+			srand(19930423); // my birthday. re-srand each time, to make sure the dimensions stay the same
 		}
 
 		// body
-		GLMATRIX({
-			glScaled(1, 0.5, 1);
-			drawCylinder(GIRL_BODY_LENGTH, GIRL_WAIST_RADIUS, VAL(GIRL_SHOULDER_LENGTH));
-		});
+		if (skin) {
+			// bottom surface
+			{
+				double a = GIRL_WAIST_RADIUS - MBRB / 2 - MBSB;
+				double b = a / 2;
+				int jStep = ceil(M_PI * (1.5 * (GIRL_WAIST_RADIUS - MBRB / 2)) * 1.05 / MBSB) + 0.5;
+				double jStepSize = 2 * M_PI / jStep;
+				double offset = jStepSize / 2;
+				for (int j = 0; j < jStep; j++) {
+					double angle = j * jStepSize + offset;
+					skin->addBallRel(a * cos(angle), b * sin(angle), MBRB / 2, MBRB);
+				}
+			}
+			// side surface
+			{
+				double offset = 0;
+				int step = ceil(GIRL_BODY_LENGTH / MBSB) + 0.5;
+				double stepSize = GIRL_BODY_LENGTH / step;
+				for (int i = 0; i <= step; i++) {
+					double a = (GIRL_WAIST_RADIUS * (step - i) * (step - i) / step + GSL * i) / step - MBRB / 2;
+					double b = a / 2;
+					double cir = M_PI * (a + b) * 1.05; // as it's ellipse of h = 9, instead of circle
+					int jStep = ceil(cir / MBSB) + 0.5;
+					double jStepSize = 2 * M_PI / jStep;
+					float height = stepSize * i;
+					for (int j = 0; j < jStep; j++) {
+						double angle = j * jStepSize + offset;
+						skin->addBallRel(a * cos(angle), b * sin(angle), height, MBRB);
+					}
+					if (i != step) { offset = M_PI * rand(); }
+				}
+			}
+			// top surface
+			{
+				double actual = GSL - MBRB / 2;
+				int step = ceil(actual / MBSB) + 0.5;
+				double stepSize = actual / step;
+				for (int i = 0; i < step; i++) {
+					double a = actual * i / step;
+					double b = a / 2;
+					double cir = M_PI * (a + b) * 1.05; // as it's ellipse of h = 9, instead of circle
+					int jStep = ceil(cir / MBSB) + 0.5;
+					double jStepSize = 2 * M_PI / jStep;
+					double offset = M_PI * rand();
+					for (int j = 0; j < jStep; j++) {
+						double angle = j * jStepSize + offset;
+						skin->addBallRel(a * cos(angle), b * sin(angle), GIRL_BODY_LENGTH - MBRB / 2, MBRB);
+					}
+				}
+			}
+		} else {
+			GLMATRIX({
+				glScaled(1, 0.5, 1);
+				drawCylinder(GIRL_BODY_LENGTH, GIRL_WAIST_RADIUS, GSL);
+			});
+		}
 
 		GLMATRIX({
 			glTranslated(0, 0, GIRL_BODY_LENGTH);
@@ -453,10 +513,10 @@ void SampleModel::drawGirl() {
 				glRotated(180 + VAL(GIRL_SHOULDER_LEFT_ANGLE_AXIAL), 0, 0, 1);
 
 				if (skin) {
-					double step = ceil(GIRL_UPPER_ARM_LENGTH / MBS);
+					int step = ceil(GIRL_UPPER_ARM_LENGTH / MBS) + 0.5;
 					double stepSize = GIRL_UPPER_ARM_LENGTH / step;
 					for (int i = 0; i <= step; i++) {
-						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step);
+						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step * MBR);
 					}
 				} else {
 					drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
@@ -467,10 +527,10 @@ void SampleModel::drawGirl() {
 					glRotated(VAL(GIRL_ELBOW_LEFT_ANGLE), 1, 0, 0);
 
 					if (skin) {
-						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS);
+						int step = ceil(GIRL_LOWER_ARM_LENGTH / MBS) + 0.5;
 						double stepSize = GIRL_LOWER_ARM_LENGTH / step;
 						for (int i = 0; i <= step; i++) {
-							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS);
+							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS * MBR);
 						}
 					} else {
 						drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
@@ -497,10 +557,10 @@ void SampleModel::drawGirl() {
 				glRotated(180 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL), 0, 0, -1);
 
 				if (skin) {
-					double step = ceil(GIRL_UPPER_ARM_LENGTH / MBS);
+					int step = ceil(GIRL_UPPER_ARM_LENGTH / MBS) + 0.5;
 					double stepSize = GIRL_UPPER_ARM_LENGTH / step;
 					for (int i = 0; i <= step; i++) {
-						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step);
+						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step * MBR);
 					}
 				} else {
 					drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
@@ -511,10 +571,10 @@ void SampleModel::drawGirl() {
 					glRotated(VAL(GIRL_ELBOW_RIGHT_ANGLE), 1, 0, 0);
 					
 					if (skin) {
-						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS);
+						int step = ceil(GIRL_LOWER_ARM_LENGTH / MBS) + 0.5;
 						double stepSize = GIRL_LOWER_ARM_LENGTH / step;
 						for (int i = 0; i <= step; i++) {
-							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS);
+							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS * MBR);
 						}
 					} else {
 						drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
@@ -676,7 +736,7 @@ int main()
 
 	createModelerControl(GIRL_HEAD_PITCH, "Girl - head pitch", -45, 90, 0.1, 0);
 	createModelerControl(GIRL_HEAD_TILT, "Girl - head tilt", -45, 45, 0.1, 0);
-	createModelerControl(GIRL_SHOULDER_LENGTH, "Girl - shoulder width", 0.75, 1.25, 0.01, 1);
+	createModelerControl(GIRL_SHOULDER_LENGTH, "Girl - shoulder width", 0.75, 1.25, 0.01, 0.9);
 	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_FLAP, "Girl - left shoudler (flap)", -90, 90, 0.1, 60);
 	createModelerControl(GIRL_SHOULDER_RIGHT_ANGLE_FLAP, "Girl - right shoudler (flap)", -90, 90, 0.1, 60);
 	createModelerControl(GIRL_SHOULDER_LEFT_ANGLE_RAISE, "Girl - left shoudler (raise)", -180, 180, 0.1, 0);
@@ -697,10 +757,13 @@ int main()
 	createModelerControl(GIRL_LEFT_FOOT_PITCH_ANGLE, "Girl - left ankle", 0, 105, 0.1, 90);
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
-	createModelerControl(GIRL_METABALL_SKIN, "Metaball skinning for girl", 0, 1, 1, 1);
-	createModelerControl(METABALL_SURFACE_THRESHOLD, "Metaball - surfacing threshold", 0.2, 100, 0.2, 80);
-	createModelerControl(METABALL_BALL_SPACING, "Metaball - ball spacing", 0.02, 1, 0.02, 0.06);
-	createModelerControl(NUM_MARCHING_CUBES, "Metaball - number of marching cubes", 10, 200, 1, 120);
+	createModelerControl(GIRL_METABALL_SKIN, "Metaball skinning for girl", 0, 1, 1, 0);
+	createModelerControl(METABALL_SURFACE_THRESHOLD, "Metaball - surfacing threshold", 1, 100, 0.2, 65);
+	createModelerControl(METABALL_BODY_BALL_RADIUS, "Metaball (body) - ball radius", 0.1, 1, 0.02, 0.3);
+	createModelerControl(METABALL_BODY_BALL_SPACING, "Metaball (body) - ball spacing", 0.1, 1, 0.02, 0.3);
+	createModelerControl(METABALL_ARM_BALL_RADIUS, "Metaball (arm) - ball radius magnification ratio", 0.5, 2, 0.05, 1.2);
+	createModelerControl(METABALL_ARM_BALL_SPACING, "Metaball (arm) - ball spacing", 0.02, 1, 0.01, 0.05);
+	createModelerControl(NUM_MARCHING_CUBES, "Metaball - marching cube grid size", 10, 200, 1, 50);
 
 	createModelerControl(DONUT_SHOW, "Donut - visible", 0, 1, 1, 0);
 	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.05, 2, 0.05, 0.25);

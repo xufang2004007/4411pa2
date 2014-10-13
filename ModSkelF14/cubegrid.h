@@ -45,7 +45,7 @@ public:
 	int numFacesDrawn;
 
 	bool CreateMemory(int gridSize);
-	void Init(float xMag, float xOff, float yMag, float yOff, float zMag, float zOff);
+	void Init(float mag, float xOff, float yOff, float zOff);
 	void DrawSurface(float threshold);
 	void FreeMemory();
 

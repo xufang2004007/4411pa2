@@ -27,7 +27,7 @@ bool CUBE_GRID::CreateMemory(int gridSize)
 }
 
 
-void CUBE_GRID::Init(float xMag, float xOff, float yMag, float yOff, float zMag, float zOff)
+void CUBE_GRID::Init(float mag, float xOff, float yOff, float zOff)
 {
 	//VERTICES
 	numVertices = (gridSize + 1)*(gridSize + 1)*(gridSize + 1);
@@ -41,7 +41,7 @@ void CUBE_GRID::Init(float xMag, float xOff, float yMag, float yOff, float zMag,
 			for (int k = 0; k<gridSize + 1; k++)
 			{
 				vertices[currentVertex].position = 
-					Vec3f((i*xMag) / (gridSize)+xOff, (j*yMag) / (gridSize)+yOff, (k*zMag) / (gridSize)+zOff);
+					Vec3f((i*mag) / (gridSize)+xOff, (j*mag) / (gridSize)+yOff, (k*mag) / (gridSize)+zOff);
 
 				currentVertex++;
 			}

@@ -71,12 +71,17 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
     <tr>
         <td><span class="ck-bell-whistle"></span></td>
         <td>The camera code has a constrained up vector -- modify the code to (1) handle camera twists (the framework is already there) and (2) to come up with an intuitive way for the user to twist the camera via mouse control.</td>
-        <td><div class="alert alert-danger" role="alert">Request clarification!</div> Use right mouse button to move horizontally.</td>
+        <td>Use right mouse button to move horizontally.</td>
     </tr>
     <tr>
         <td><span class="ck-bell"></span><span class="ck-bell"></span></td>
         <td>Add a function in your model file for drawing a new type of primitive. The following examples will definitely garner two bells ; if you come up with your own primitive, you will be awarded one or two bells based on its coolness. 1) Extruded surface - given two curves, create a surface by sweeping one curve along the path defined by the other curve. 2) Surfaces of rotation - given a curve and a rotation axis, sweep out a surface by rotating the curve around the axis. 3) Torus.</td>
         <td>Both <i>2) surfaces of rotation</i> and <i>3) torus</i> are implemented. The surface of rotation is demonstrated with the <i>hat</i>, with 2 adjustable parameters. The torus is demostrated by a <i>donut</i>, with 4 adjustable parameters. Both are implemented using NURBS surface, support texture mapping, and respond to quality adjustment. The surface of rotation mode supports uniform cubic spline as input.</td>
+    </tr>
+    <tr>
+        <td><span class="ck-bell"></span><span class="ck-bell"></span><span class="ck-bell"></span><span class="ck-bell"></span></td>
+        <td>One difficulty with hierarchical modeling using primitives is the difficulty of building "organic" shapes. It's difficult, for instance, to make a convincing looking human arm because you can't really show the bending of the skin and bulging of the muscle using cylinders and spheres. There has, however, been success in building organic shapes using metaballs. Implement your hierarchical model and "skin" it with metaballs. Hint: look up "marching cubes" and "marching tetrahedra" --these are two commonly used algorithms for volume rendering. Here is a demo application by Joe Hall and Eugene Hsu that shows metaballs in action.</td>
+        <td>The girl's trunk and arms are possible to be rendered with metaballs. For the body trunk, balls of uniform radius are used. For the arms, balls of adaptive radii are used. Several parameters are adjustable for each. The global quality setting will not be respected. Instead, a separated control is provided to adjust the size of marching cube grid.</td>
     </tr>
     </table>
   </div>

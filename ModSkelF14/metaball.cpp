@@ -19,17 +19,10 @@ MetaballIsNotMeatball::MetaballIsNotMeatball(int quality) {
 	initialized = ALLOC;
 }
 
-#include "debug.h"
-
 void MetaballIsNotMeatball::initGrid(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
 	if (initialized < ALLOC) { return; }
-	
-	stringstream ss;
-	format(ss);
-	ss << xMin << " " << xMax << " " << yMin << " " << yMax << " " << zMin << " " << zMax;
-	alert(ss);
-	cubeGrid.Init(20, -10, 20, -10, 20, -10);
-	//cubeGrid.Init((xMax - xMin) / cubeGrid.gridSize, -(xMax + xMin) / 2, (yMax - yMin) / cubeGrid.gridSize, -(yMax + yMin) / 2, (zMax - zMin) / cubeGrid.gridSize, -(zMax + zMin) / 2);
+	float size = max(xMax - xMin, max(yMax - yMin, zMax - zMin));
+	cubeGrid.Init(size, (xMax + xMin - size) / 2, (yMax + yMin - size) / 2, (zMax + zMin - size) / 2);
 	initialized = GRID_INIT;
 }
 
