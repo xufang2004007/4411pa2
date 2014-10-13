@@ -1,39 +1,40 @@
 #include "MetaBall.h";
 #include "modelerdraw.h"
-#include "mat.h"
+#include "vec_mat_ext.h"
 
-MetaballIsNotMeatball::MetaballIsNotMeatball(float mult) {
-	initialized = false;
+MetaballIsNotMeatball::MetaballIsNotMeatball(int quality) {
+	initialized = NONE;
 
 	ModelerDrawState *mds = ModelerDrawState::Instance();
-	int quality;
+	minX = HUGE; minY = HUGE; minZ = HUGE;
+	maxX = -HUGE; maxY = -HUGE; maxZ = -HUGE;
 
 	if (mds->m_rayFile) { return; }
 	_setupOpenGl();
 
-	switch (mds->m_quality)
-	{
-	case HIGH:
-		quality = 120 * mult; break;
-	case MEDIUM:
-		quality = 88 * mult; break;
-	case LOW:
-		quality = 56 * mult; break;
-	case POOR:
-		quality = 24 * mult; break;
-	}
-
 	if (!cubeGrid.CreateMemory(quality)) {
 		return;
 	}
-	if (!cubeGrid.Init(quality)) {
-		return;
-	}
+
+	initialized = ALLOC;
+}
+
+#include "debug.h"
+
+void MetaballIsNotMeatball::initGrid(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
+	if (initialized < ALLOC) { return; }
 	
-	initialized = true;
+	stringstream ss;
+	format(ss);
+	ss << xMin << " " << xMax << " " << yMin << " " << yMax << " " << zMin << " " << zMax;
+	alert(ss);
+	cubeGrid.Init(20, -10, 20, -10, 20, -10);
+	//cubeGrid.Init((xMax - xMin) / cubeGrid.gridSize, -(xMax + xMin) / 2, (yMax - yMin) / cubeGrid.gridSize, -(yMax + yMin) / 2, (zMax - zMin) / cubeGrid.gridSize, -(zMax + zMin) / 2);
+	initialized = GRID_INIT;
 }
 
 void MetaballIsNotMeatball::calc() {
+	if (initialized < GRID_INIT) { return; }
 	// clear the field
 	for (int i = 0; i< cubeGrid.numVertices; i++) {
 		cubeGrid.vertices[i].value = 0.0f;
@@ -62,22 +63,41 @@ void MetaballIsNotMeatball::calc() {
 			cubeGrid.vertices[j].normal += ballToPoint*normalScale;
 		}
 	}
+	initialized = CALC;
 }
 
 void MetaballIsNotMeatball::draw(float threshold) {
-	if (!initialized) { return; }
-	calc();
+	if (initialized < CALC) { return; }
 	cubeGrid.DrawSurface(threshold);
+	initialized = DRAW;
 }
 
 void MetaballIsNotMeatball::addBallAbs(Vec3f center, float radius) {
 	metaballs.push_back(Metaball(center, radius));
 }
 
-void MetaballIsNotMeatball::addBallRel(float x, float y, float z, float radius) {
+void MetaballIsNotMeatball::addBallRel(float x, float y, float z, float radius) { // TOTO: adjust the radius accordingly (when glScale used)
 	Vec3f center(x, y, z);
-	Mat4f modelMtx;
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelMtx[0]);
-	Vec3f abs = modelMtx * center;
+	float output[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, output);
+	Mat4f modelMtx = Mat4fromGLMatrix(output);
+	Mat4f diff = baseInv * modelMtx;
+	Vec3f abs = diff * center;
+	if (abs[0] > maxX) { maxX = abs[0]; }
+	if (abs[1] > maxY) { maxY = abs[1]; }
+	if (abs[2] > maxZ) { maxZ = abs[2]; }
+	if (abs[0] < minX) { minX = abs[0]; }
+	if (abs[1] < minY) { minY = abs[1]; }
+	if (abs[2] < minZ) { minZ = abs[2]; }
 	addBallAbs(abs, radius);
+}
+
+void MetaballIsNotMeatball::setBase() {
+	float output[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, output);
+	baseInv = Mat4fromGLMatrix(output).inverse();
+}
+
+void MetaballIsNotMeatball::autoInitGrid() {
+	initGrid(minX, maxX, minY, maxY, minZ, maxZ);
 }

@@ -26,7 +26,9 @@ class SampleModel : public ModelerView
 {
 public:
 	SampleModel(int x, int y, int w, int h, char *label)
-		: ModelerView(x, y, w, h, label) { }
+		: ModelerView(x, y, w, h, label) {
+		srand(345624574);
+	}
 
 	void draw();
 	void drawGirl();
@@ -191,15 +193,11 @@ bool SampleModel::isAnimating()
 // method of ModelerView to draw out SampleModel
 void SampleModel::draw()
 {
-	// This call takes care of a lot of the nasty projection 
-	// matrix stuff.  Unless you want to fudge directly with the 
-	// projection matrix, don't bother with this ...
+	//ModelerView::draw();
+	ModelerViewDraw();
 
 	animateCounter++;
 	animateCounter = animateCounter % ANIMATION_FRAMES_COUNT;
-
-	//ModelerView::draw();
-	ModelerViewDraw();
 
 	// draw the sample model
 	setAmbientColor(.15f, .15f, .15f);
@@ -380,8 +378,10 @@ void SampleModel::drawGirl() {
 	double MBS = VAL(METABALL_BALL_SPACING);
 
 	GLDRAWWITH(COLOR_GIRL_BODY, {
+
 		if (VAL(GIRL_METABALL_SKIN)) {
-			skin = new Meta(2);
+			skin = new Meta(VAL(NUM_MARCHING_CUBES));
+			skin->setBase();
 		}
 
 		// body
@@ -451,27 +451,29 @@ void SampleModel::drawGirl() {
 				glRotated(90 + VAL(GIRL_SHOULDER_LEFT_ANGLE_FLAP), 0, -1, 0);
 				glRotated(VAL(GIRL_SHOULDER_LEFT_ANGLE_RAISE), -1, 0, 0);
 				glRotated(180 + VAL(GIRL_SHOULDER_LEFT_ANGLE_AXIAL), 0, 0, 1);
-				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 				if (skin) {
 					double step = ceil(GIRL_UPPER_ARM_LENGTH / MBS);
 					double stepSize = GIRL_UPPER_ARM_LENGTH / step;
 					for (int i = 0; i <= step; i++) {
-						skin->addBallRel(0, 0, i * stepSize, GIRL_UPPER_ARM_RADIUS * i + GIRL_LOWER_ARM_RADIUS * (step - i));
+						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step);
 					}
+				} else {
+					drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 				}
 
 				GLMATRIX({
 					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
 					glRotated(VAL(GIRL_ELBOW_LEFT_ANGLE), 1, 0, 0);
-					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 
 					if (skin) {
-						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS); // TODO: TODO: change to lower arm, then draw
+						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS);
 						double stepSize = GIRL_LOWER_ARM_LENGTH / step;
 						for (int i = 0; i <= step; i++) {
-							skin->addBallRel(0, 0, i * stepSize, GIRL_UPPER_ARM_RADIUS * i + GIRL_LOWER_ARM_RADIUS * (step - i));
+							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS);
 						}
+					} else {
+						drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
 					}
 
 					if (VAL(LVL_DETAIL) >= 1) {
@@ -493,12 +495,30 @@ void SampleModel::drawGirl() {
 				glRotated(90 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_FLAP), 0, 1, 0);
 				glRotated(VAL(GIRL_SHOULDER_RIGHT_ANGLE_RAISE), -1, 0, 0);
 				glRotated(180 + VAL(GIRL_SHOULDER_RIGHT_ANGLE_AXIAL), 0, 0, -1);
-				drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+
+				if (skin) {
+					double step = ceil(GIRL_UPPER_ARM_LENGTH / MBS);
+					double stepSize = GIRL_UPPER_ARM_LENGTH / step;
+					for (int i = 0; i <= step; i++) {
+						skin->addBallRel(0, 0, i * stepSize, (GIRL_UPPER_ARM_RADIUS * (step - i) + GIRL_LOWER_ARM_RADIUS * i) / step);
+					}
+				} else {
+					drawCylinder(GIRL_UPPER_ARM_LENGTH, GIRL_UPPER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+				}
 
 				GLMATRIX({
 					glTranslated(0, 0, GIRL_UPPER_ARM_LENGTH);
 					glRotated(VAL(GIRL_ELBOW_RIGHT_ANGLE), 1, 0, 0);
-					drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+					
+					if (skin) {
+						double step = ceil(GIRL_LOWER_ARM_LENGTH / MBS);
+						double stepSize = GIRL_LOWER_ARM_LENGTH / step;
+						for (int i = 0; i <= step; i++) {
+							skin->addBallRel(0, 0, i * stepSize, GIRL_LOWER_ARM_RADIUS);
+						}
+					} else {
+						drawCylinder(GIRL_LOWER_ARM_LENGTH, GIRL_LOWER_ARM_RADIUS, GIRL_LOWER_ARM_RADIUS);
+					}
 
 					GLMATRIX({
 						glTranslated(0, 0, GIRL_LOWER_ARM_LENGTH);
@@ -526,7 +546,6 @@ void SampleModel::drawGirl() {
 				});
 
 			});
-
 		});
 
 		// left leg / feet
@@ -601,11 +620,15 @@ void SampleModel::drawGirl() {
 			});
 
 		});
-	});
 
-	if (skin) {
-		delete skin;
-	}
+		if (skin) {
+			skin->autoInitGrid();
+			skin->calc();
+			skin->draw(VAL(METABALL_SURFACE_THRESHOLD));
+			delete skin;
+		}
+
+	});
 }
 
 int main()
@@ -675,8 +698,9 @@ int main()
 	createModelerControl(GIRL_RIGHT_FOOT_PITCH_ANGLE, "Girl - right ankle", 0, 105, 0.1, 90);
 
 	createModelerControl(GIRL_METABALL_SKIN, "Metaball skinning for girl", 0, 1, 1, 1);
-	createModelerControl(METABALL_SURFACE_THRESHOLD, "Metaball - surfacing threshold", 0.5, 2.5, 0.05, 1);
-	createModelerControl(METABALL_BALL_SPACING, "Metaball - ball spacing", 0.5, 2.5, 0.05, 1);
+	createModelerControl(METABALL_SURFACE_THRESHOLD, "Metaball - surfacing threshold", 0.2, 100, 0.2, 80);
+	createModelerControl(METABALL_BALL_SPACING, "Metaball - ball spacing", 0.02, 1, 0.02, 0.06);
+	createModelerControl(NUM_MARCHING_CUBES, "Metaball - number of marching cubes", 10, 200, 1, 120);
 
 	createModelerControl(DONUT_SHOW, "Donut - visible", 0, 1, 1, 0);
 	createModelerControl(DONUT_MAJOR_R, "Donut - radius", 0.05, 2, 0.05, 0.25);

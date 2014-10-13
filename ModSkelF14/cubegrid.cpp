@@ -10,6 +10,7 @@
 
 bool CUBE_GRID::CreateMemory(int gridSize)
 {
+	this->gridSize = gridSize;
 	vertices = new CUBE_GRID_VERTEX[(gridSize + 1)*(gridSize + 1)*(gridSize + 1)];
 	if (!vertices)
 	{
@@ -26,7 +27,7 @@ bool CUBE_GRID::CreateMemory(int gridSize)
 }
 
 
-bool CUBE_GRID::Init(int gridSize)
+void CUBE_GRID::Init(float xMag, float xOff, float yMag, float yOff, float zMag, float zOff)
 {
 	//VERTICES
 	numVertices = (gridSize + 1)*(gridSize + 1)*(gridSize + 1);
@@ -40,7 +41,7 @@ bool CUBE_GRID::Init(int gridSize)
 			for (int k = 0; k<gridSize + 1; k++)
 			{
 				vertices[currentVertex].position = 
-					Vec3d((i*20.0f) / (gridSize)-10.0f, (j*20.0f) / (gridSize)-10.0f, (k*20.0f) / (gridSize)-10.0f);
+					Vec3f((i*xMag) / (gridSize)+xOff, (j*yMag) / (gridSize)+yOff, (k*zMag) / (gridSize)+zOff);
 
 				currentVertex++;
 			}
@@ -71,8 +72,6 @@ bool CUBE_GRID::Init(int gridSize)
 			}
 		}
 	}
-
-	return true;
 }
 
 void CUBE_GRID::DrawSurface(float threshold)

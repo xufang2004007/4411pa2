@@ -34,6 +34,8 @@ public:
 class CUBE_GRID
 {
 public:
+	int gridSize;
+
 	int numVertices;
 	CUBE_GRID_VERTEX * vertices;
 
@@ -43,7 +45,7 @@ public:
 	int numFacesDrawn;
 
 	bool CreateMemory(int gridSize);
-	bool Init(int gridSize);
+	void Init(float xMag, float xOff, float yMag, float yOff, float zMag, float zOff);
 	void DrawSurface(float threshold);
 	void FreeMemory();
 

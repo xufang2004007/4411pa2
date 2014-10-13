@@ -183,8 +183,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="cubegrid.h" />
+    <ClInclude Include="debug.h" />
     <ClInclude Include="metaball.h" />
     <ClInclude Include="texture.cpp" />
+    <ClInclude Include="vec_mat_ext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />

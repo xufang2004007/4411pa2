@@ -89,5 +89,11 @@
     <ClInclude Include="cubegrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vec_mat_ext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

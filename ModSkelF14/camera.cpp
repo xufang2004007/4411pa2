@@ -4,6 +4,7 @@
 #include <gl/glu.h>
 #include <sstream>
 #include "camera.h"
+#include "vec_mat_ext.h"
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
@@ -178,19 +179,12 @@ void Camera::applyViewingTransform() {
 	// Place the camera at mPosition, aim the camera at
 	// mLookAt, and twist the camera such that mUpVector is up
 	lookAt(mPosition,mLookAt,mUpVector);
-
 }
 
 void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 {
 	Vec3f x, y, z;
 	float glm[16];
-
-	#define CROSS_PRODUCT(dest, s1, s2) {\
-		dest[0] = s1[1] * s2[2] - s1[2] * s2[1];\
-		dest[1] = -s1[0] * s2[2] + s1[2] * s2[0];\
-		dest[2] = s1[0] * s2[1] - s1[1] * s2[0];\
-	}\
 
 	/* Make rotation matrix */
 	/* Z vector */
@@ -199,9 +193,9 @@ void Camera::lookAt(Vec3f eye, Vec3f at, Vec3f up)
 	/* Y vector */
 	y = up;
 	/* X vector = Y cross Z */
-	CROSS_PRODUCT(x, y, z);
+	x = cross_product(y, z);
 	/* Recompute Y = Z cross X */
-	CROSS_PRODUCT(y, z, x);
+	y = cross_product(z, x);
 	/* cross product gives area of parallelogram, which is < 1.0 for
 	* non-perpendicular unit-length vectors; so normalize x, y here
 	*/
